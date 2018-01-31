@@ -50,6 +50,11 @@
     <Compile Include="BindingModels\StockComponentBindingModel.cs" />
     <Compile Include="DataList.cs" />
     <Compile Include="ImplementationsList\ClientServiceList.cs" />
+    <Compile Include="ImplementationsList\ComponentServiceList.cs" />
+    <Compile Include="ImplementationsList\ImplementerServiceList.cs" />
+    <Compile Include="ImplementationsList\MainServiceList.cs" />
+    <Compile Include="ImplementationsList\ProductServiceList.cs" />
+    <Compile Include="ImplementationsList\StockServiceList.cs" />
     <Compile Include="Interfaces\IClientService.cs" />
     <Compile Include="Interfaces\IComponentService.cs" />
     <Compile Include="Interfaces\IImplementerService.cs" />

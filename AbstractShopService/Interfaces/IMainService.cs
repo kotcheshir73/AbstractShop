@@ -16,6 +16,8 @@ namespace AbstractShopService.Interfaces
 
         void FinishOrder(int id);
 
+        void PayOrder(int id);
+
         void PutComponentOnStock(StockComponentBindingModel model);
     }
 }

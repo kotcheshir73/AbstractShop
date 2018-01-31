@@ -10,6 +10,6 @@ namespace AbstractShopService.BindingModels
 
         public decimal Price { get; set; }
 
-        public List<ProductComponentBindingModel> ProductComponent { get; set; }
+        public List<ProductComponentBindingModel> ProductComponents { get; set; }
     }
 }

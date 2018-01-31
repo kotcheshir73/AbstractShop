@@ -77,7 +77,8 @@ namespace AbstractShopService.ImplementationsList
                 {
                     index = i;
                 }
-                if (source.Clients[i].ClientFIO == model.ClientFIO && source.Clients[i].Id != model.Id)
+                if (source.Clients[i].ClientFIO == model.ClientFIO && 
+                    source.Clients[i].Id != model.Id)
                 {
                     throw new Exception("Уже есть клиент с таким ФИО");
                 }
