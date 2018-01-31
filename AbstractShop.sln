@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopModel", "Abstra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopService", "AbstractShopService\AbstractShopService.csproj", "{2BC53217-7680-45D4-970E-944996E6AB2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopView", "AbstractShopView\AbstractShopView.csproj", "{92C588FB-347A-4D3F-948C-A08891347860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2BC53217-7680-45D4-970E-944996E6AB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BC53217-7680-45D4-970E-944996E6AB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BC53217-7680-45D4-970E-944996E6AB2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92C588FB-347A-4D3F-948C-A08891347860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92C588FB-347A-4D3F-948C-A08891347860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92C588FB-347A-4D3F-948C-A08891347860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92C588FB-347A-4D3F-948C-A08891347860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
