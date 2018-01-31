@@ -1,12 +1,19 @@
-﻿using System;
+﻿using AbstractShopService.BindingModels;
+using AbstractShopService.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbstractShopService.Interfaces
 {
-    interface IStockService
+    public interface IStockService
     {
+        List<StockViewModel> GetList();
+
+        StockViewModel GetElement(int id);
+
+        void AddElement(StockBindingModel model);
+
+        void UpdElement(StockBindingModel model);
+
+        void DelElement(int id);
     }
 }

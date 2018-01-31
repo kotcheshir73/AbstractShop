@@ -1,12 +1,21 @@
-﻿using System;
+﻿using AbstractShopService.BindingModels;
+using AbstractShopService.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbstractShopService.Interfaces
 {
-    interface IMainService
+    public interface IMainService
     {
+        List<OrderViewModel> GetList();
+
+        OrderViewModel GetElement(int id);
+
+        void CreateOrder(OrderBindingModel model);
+
+        void TakeOrderInWork(OrderBindingModel model);
+
+        void FinishOrder(int id);
+
+        void PutComponentOnStock(StockComponentBindingModel model);
     }
 }

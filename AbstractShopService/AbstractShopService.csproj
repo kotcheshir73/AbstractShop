@@ -40,6 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingModels\ClientBindingModel.cs" />
+    <Compile Include="BindingModels\ComponentBindingModel.cs" />
+    <Compile Include="BindingModels\ImplementerBindingModel.cs" />
+    <Compile Include="BindingModels\OrderBindingModel.cs" />
+    <Compile Include="BindingModels\ProductBindingModel.cs" />
+    <Compile Include="BindingModels\ProductComponentBindingModel.cs" />
+    <Compile Include="BindingModels\StockBindingModel.cs" />
+    <Compile Include="BindingModels\StockComponentBindingModel.cs" />
+    <Compile Include="DataList.cs" />
+    <Compile Include="ImplementationsList\ClientServiceList.cs" />
     <Compile Include="Interfaces\IClientService.cs" />
     <Compile Include="Interfaces\IComponentService.cs" />
     <Compile Include="Interfaces\IImplementerService.cs" />
@@ -47,11 +57,20 @@
     <Compile Include="Interfaces\IProductService.cs" />
     <Compile Include="Interfaces\IStockService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ClientViewModel.cs" />
+    <Compile Include="ViewModels\ComponentViewModel.cs" />
+    <Compile Include="ViewModels\ImplementerViewModel.cs" />
+    <Compile Include="ViewModels\OrderViewModel.cs" />
+    <Compile Include="ViewModels\ProductComponentViewModel.cs" />
+    <Compile Include="ViewModels\ProductViewModel.cs" />
+    <Compile Include="ViewModels\StockComponentViewModel.cs" />
+    <Compile Include="ViewModels\StockViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="BindingModels\" />
-    <Folder Include="ImplementationsList\" />
-    <Folder Include="ViewModels\" />
+    <ProjectReference Include="..\AbstractShopModel\AbstractShopModel.csproj">
+      <Project>{5edcfafa-0f3a-4810-8489-4d221a86ad1e}</Project>
+      <Name>AbstractShopModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
