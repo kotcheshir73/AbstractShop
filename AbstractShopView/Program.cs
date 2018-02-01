@@ -31,10 +31,7 @@ namespace AbstractShopView
             currentContainer.RegisterType<IProductService, ProductServiceList>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IStockService, StockServiceList>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IMainService, MainServiceList>(new HierarchicalLifetimeManager());
-
-            currentContainer.RegisterType<FormMain>().RegisterInstance<IUnityContainer>(currentContainer);
-            currentContainer.RegisterType<FormClients>().RegisterInstance<IUnityContainer>(currentContainer);
-
+            
             return currentContainer;
         }
     }

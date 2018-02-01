@@ -2,38 +2,66 @@
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Unity;
 using Unity.Attributes;
 
 namespace AbstractShopView
 {
-    public partial class FormComponents : Form
+    public partial class FormProduct : Form
     {
         [Dependency]
         public new IUnityContainer Container { get; set; }
 
-        private readonly IComponentService service;
+        public int Id { set { id = value; } }
 
-        public FormComponents(IComponentService service)
+        private readonly IProductService service;
+
+        private int? id;
+
+        private List<ProductComponentViewModel> productComponents;
+
+        public FormProduct(IProductService service)
         {
             InitializeComponent();
             this.service = service;
         }
 
-        private void FormComponents_Load(object sender, EventArgs e)
+        private void FormProduct_Load(object sender, EventArgs e)
         {
-            LoadData();
+            if (id.HasValue)
+            {
+                try
+                {
+                    ProductViewModel view = service.GetElement(id.Value);
+                    if (view != null)
+                    {
+                        textBoxName.Text = view.ProductName;
+                        textBoxPrice.Text = view.Price.ToString();
+                        productComponents = view.ProductComponents;
+                        LoadData();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void LoadData()
         {
             try
             {
-                List<ComponentViewModel> list = service.GetList();
-                if (list != null)
+                if (productComponents != null)
                 {
-                    dataGridView.DataSource = list;
+                    dataGridView.DataSource = productComponents;
                     dataGridView.Columns[0].Visible = false;
                     dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
@@ -46,9 +74,10 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormComponent>();
+            var form = Container.Resolve<FormProductComponent>();
             if (form.ShowDialog() == DialogResult.OK)
             {
+                //
                 LoadData();
             }
         }
@@ -57,10 +86,11 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormComponent>();
+                var form = Container.Resolve<FormProductComponent>();
                 form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {
+                    //
                     LoadData();
                 }
             }
@@ -72,10 +102,9 @@ namespace AbstractShopView
             {
                 if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        productComponents.RemoveAt(dataGridView.SelectedRows[0].Cells[0].RowIndex);
                     }
                     catch (Exception ex)
                     {

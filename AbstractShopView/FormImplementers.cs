@@ -2,26 +2,32 @@
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Unity;
 using Unity.Attributes;
 
 namespace AbstractShopView
 {
-    public partial class FormComponents : Form
+    public partial class FormImplementers : Form
     {
         [Dependency]
         public new IUnityContainer Container { get; set; }
 
-        private readonly IComponentService service;
+        private readonly IImplementerService service;
 
-        public FormComponents(IComponentService service)
+        public FormImplementers(IImplementerService service)
         {
             InitializeComponent();
             this.service = service;
         }
 
-        private void FormComponents_Load(object sender, EventArgs e)
+        private void FormImplementers_Load(object sender, EventArgs e)
         {
             LoadData();
         }
@@ -30,7 +36,7 @@ namespace AbstractShopView
         {
             try
             {
-                List<ComponentViewModel> list = service.GetList();
+                List<ImplementerViewModel> list = service.GetList();
                 if (list != null)
                 {
                     dataGridView.DataSource = list;
@@ -46,7 +52,7 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormComponent>();
+            var form = Container.Resolve<FormImplementer>();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
@@ -57,7 +63,7 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormComponent>();
+                var form = Container.Resolve<FormImplementer>();
                 form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {

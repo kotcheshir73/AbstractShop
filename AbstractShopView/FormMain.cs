@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Unity;
 using Unity.Attributes;
@@ -31,7 +24,8 @@ namespace AbstractShopView
 
         private void компонентыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            var form = Container.Resolve<FormComponents>();
+            form.ShowDialog();
         }
 
         private void изделияToolStripMenuItem_Click(object sender, EventArgs e)
@@ -46,7 +40,8 @@ namespace AbstractShopView
 
         private void сотрудникиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            var form = Container.Resolve<FormImplementers>();
+            form.ShowDialog();
         }
     }
 }
