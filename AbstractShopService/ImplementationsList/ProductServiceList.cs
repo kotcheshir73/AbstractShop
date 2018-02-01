@@ -26,11 +26,21 @@ namespace AbstractShopService.ImplementationsList
                 {
                     if (source.ProductComponents[j].ProductId == source.Products[i].Id)
                     {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Components.Count; ++k)
+                        {
+                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                            {
+                                componentName = source.Components[k].ComponentName;
+                                break;
+                            }
+                        }
                         productComponents.Add(new ProductComponentViewModel
                         {
                             Id = source.ProductComponents[j].Id,
                             ProductId = source.ProductComponents[j].ProductId,
                             ComponentId = source.ProductComponents[j].ComponentId,
+                            ComponentName = componentName,
                             Count = source.ProductComponents[j].Count
                         });
                     }
@@ -56,11 +66,21 @@ namespace AbstractShopService.ImplementationsList
                 {
                     if (source.ProductComponents[j].ProductId == source.Products[i].Id)
                     {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Components.Count; ++k)
+                        {
+                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                            {
+                                componentName = source.Components[k].ComponentName;
+                                break;
+                            }
+                        }
                         productComponents.Add(new ProductComponentViewModel
                         {
                             Id = source.ProductComponents[j].Id,
                             ProductId = source.ProductComponents[j].ProductId,
                             ComponentId = source.ProductComponents[j].ComponentId,
+                            ComponentName = componentName,
                             Count = source.ProductComponents[j].Count
                         });
                     }

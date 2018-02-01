@@ -26,11 +26,21 @@ namespace AbstractShopService.ImplementationsList
                 {
                     if (source.StockComponents[j].StockId == source.Stocks[i].Id)
                     {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Components.Count; ++k)
+                        {
+                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                            {
+                                componentName = source.Components[k].ComponentName;
+                                break;
+                            }
+                        }
                         StockComponents.Add(new StockComponentViewModel
                         {
                             Id = source.StockComponents[j].Id,
                             StockId = source.StockComponents[j].StockId,
                             ComponentId = source.StockComponents[j].ComponentId,
+                            ComponentName = componentName,
                             Count = source.StockComponents[j].Count
                         });
                     }
@@ -55,11 +65,21 @@ namespace AbstractShopService.ImplementationsList
                 {
                     if (source.StockComponents[j].StockId == source.Stocks[i].Id)
                     {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Components.Count; ++k)
+                        {
+                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                            {
+                                componentName = source.Components[k].ComponentName;
+                                break;
+                            }
+                        }
                         StockComponents.Add(new StockComponentViewModel
                         {
                             Id = source.StockComponents[j].Id,
                             StockId = source.StockComponents[j].StockId,
                             ComponentId = source.StockComponents[j].ComponentId,
+                            ComponentName = componentName,
                             Count = source.StockComponents[j].Count
                         });
                     }
@@ -97,24 +117,6 @@ namespace AbstractShopService.ImplementationsList
                 Id = maxId + 1,
                 StockName = model.StockName
             });
-            int maxPCId = 0;
-            for (int i = 0; i < source.StockComponents.Count; ++i)
-            {
-                if (source.StockComponents[i].Id > maxPCId)
-                {
-                    maxPCId = source.StockComponents[i].Id;
-                }
-            }
-            for (int i = 0; i < model.StockComponents.Count; ++i)
-            {
-                source.StockComponents.Add(new StockComponent
-                {
-                    Id = ++maxPCId,
-                    StockId = maxId + 1,
-                    ComponentId = model.StockComponents[i].ComponentId,
-                    Count = model.StockComponents[i].Count
-                });
-            }
         }
 
         public void UpdElement(StockBindingModel model)
@@ -137,47 +139,6 @@ namespace AbstractShopService.ImplementationsList
                 throw new Exception("Элемент не найден");
             }
             source.Stocks[index].StockName = model.StockName;
-            int maxPCId = 0;
-            for (int i = 0; i < source.StockComponents.Count; ++i)
-            {
-                if (source.StockComponents[i].Id > maxPCId)
-                {
-                    maxPCId = source.StockComponents[i].Id;
-                }
-            }
-            for (int i = 0; i < source.StockComponents.Count; ++i)
-            {
-                if (source.StockComponents[i].StockId == model.Id)
-                {
-                    bool flag = true;
-                    for (int j = 0; j < model.StockComponents.Count; ++j)
-                    {
-                        if (source.StockComponents[i].Id == model.StockComponents[j].Id)
-                        {
-                            source.StockComponents[i].Count = model.StockComponents[j].Count;
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag)
-                    {
-                        source.StockComponents.RemoveAt(i--);
-                    }
-                }
-            }
-            for (int i = 0; i < model.StockComponents.Count; ++i)
-            {
-                if (model.StockComponents[i].Id == 0)
-                {
-                    source.StockComponents.Add(new StockComponent
-                    {
-                        Id = ++maxPCId,
-                        StockId = model.Id,
-                        ComponentId = model.StockComponents[i].ComponentId,
-                        Count = model.StockComponents[i].Count
-                    });
-                }
-            }
         }
 
         public void DelElement(int id)

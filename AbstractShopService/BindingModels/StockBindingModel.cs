@@ -7,7 +7,5 @@ namespace AbstractShopService.BindingModels
         public int Id { get; set; }
 
         public string StockName { get; set; }
-
-        public List<StockComponentBindingModel> StockComponents { get; set; }
     }
 }

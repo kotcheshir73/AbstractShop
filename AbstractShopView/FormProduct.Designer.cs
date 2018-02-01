@@ -52,6 +52,7 @@
             this.buttonCancel.TabIndex = 6;
             this.buttonCancel.Text = "Отмена";
             this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // buttonSave
             // 
@@ -61,6 +62,7 @@
             this.buttonSave.TabIndex = 5;
             this.buttonSave.Text = "Сохранить";
             this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // textBoxName
             // 
@@ -174,6 +176,7 @@
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.labelName);
             this.Name = "FormProduct";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Изделие";
             this.Load += new System.EventHandler(this.FormProduct_Load);
             this.groupBoxComponents.ResumeLayout(false);

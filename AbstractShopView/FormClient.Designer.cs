@@ -80,6 +80,7 @@
             this.Controls.Add(this.textBoxFIO);
             this.Controls.Add(this.labelFIO);
             this.Name = "FormClient";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Клиент";
             this.Load += new System.EventHandler(this.FormClient_Load);
             this.ResumeLayout(false);

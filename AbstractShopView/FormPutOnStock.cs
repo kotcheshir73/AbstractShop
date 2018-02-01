@@ -1,4 +1,5 @@
-﻿using AbstractShopService.Interfaces;
+﻿using AbstractShopService.BindingModels;
+using AbstractShopService.Interfaces;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,45 +9,49 @@ using Unity.Attributes;
 
 namespace AbstractShopView
 {
-    public partial class FormProductComponent : Form
+    public partial class FormPutOnStock : Form
     {
         [Dependency]
         public new IUnityContainer Container { get; set; }
 
-        public ProductComponentViewModel Model { set { model = value; }  get { return model; } }
+        private readonly IStockService serviceS;
 
-        private readonly IComponentService service;
+        private readonly IComponentService serviceC;
 
-        private ProductComponentViewModel model;
+        private readonly IMainService serviceM;
 
-        public FormProductComponent(IComponentService service)
+        public FormPutOnStock(IStockService serviceS, IComponentService serviceC, IMainService serviceM)
         {
             InitializeComponent();
-            this.service = service;
+            this.serviceS = serviceS;
+            this.serviceC = serviceC;
+            this.serviceM = serviceM;
         }
 
-        private void FormProductComponent_Load(object sender, EventArgs e)
+        private void FormPutOnStock_Load(object sender, EventArgs e)
         {
             try
             {
-                List<ComponentViewModel> list = service.GetList();
-                if (list != null)
+                List<ComponentViewModel> listC = serviceC.GetList();
+                if (listC != null)
                 {
                     comboBoxComponent.DisplayMember = "ComponentName";
                     comboBoxComponent.ValueMember = "Id";
-                    comboBoxComponent.DataSource = list;
+                    comboBoxComponent.DataSource = listC;
                     comboBoxComponent.SelectedItem = null;
+                }
+                List<StockViewModel> listS = serviceS.GetList();
+                if (listS != null)
+                {
+                    comboBoxStock.DisplayMember = "StockName";
+                    comboBoxStock.ValueMember = "Id";
+                    comboBoxStock.DataSource = listS;
+                    comboBoxStock.SelectedItem = null;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            if (model != null)
-            {
-                comboBoxComponent.Enabled = false;
-                comboBoxComponent.SelectedValue = model.ComponentId;
-                textBoxCount.Text = model.Count.ToString();
             }
         }
 
@@ -62,21 +67,19 @@ namespace AbstractShopView
                 MessageBox.Show("Выберите компонент", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            if (comboBoxStock.SelectedValue == null)
+            {
+                MessageBox.Show("Выберите склад", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
-                if (model == null)
+                serviceM.PutComponentOnStock(new StockComponentBindingModel
                 {
-                    model = new ProductComponentViewModel
-                    {
-                        ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
-                        ComponentName = comboBoxComponent.Text,
-                        Count = Convert.ToInt32(textBoxCount.Text)
-                    };
-                }
-                else
-                {
-                    model.Count = Convert.ToInt32(textBoxCount.Text);
-                }
+                    ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
+                    StockId = Convert.ToInt32(comboBoxStock.SelectedValue),
+                    Count = Convert.ToInt32(textBoxCount.Text)
+                });
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DialogResult = DialogResult.OK;
                 Close();

@@ -111,6 +111,12 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCreateOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCreateOrder.Designer.cs">
+      <DependentUpon>FormCreateOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormProduct.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,8 +129,38 @@
     <Compile Include="FormProductComponent.Designer.cs">
       <DependentUpon>FormProductComponent.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormProducts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormProducts.Designer.cs">
+      <DependentUpon>FormProducts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormStock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStock.Designer.cs">
+      <DependentUpon>FormStock.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormStocks.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStocks.Designer.cs">
+      <DependentUpon>FormStocks.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTakeOrderInWork.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTakeOrderInWork.Designer.cs">
+      <DependentUpon>FormTakeOrderInWork.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FormPutOnStock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPutOnStock.Designer.cs">
+      <DependentUpon>FormPutOnStock.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="FormClient.resx">
       <DependentUpon>FormClient.cs</DependentUpon>
     </EmbeddedResource>
@@ -146,11 +182,26 @@
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormCreateOrder.resx">
+      <DependentUpon>FormCreateOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormProduct.resx">
       <DependentUpon>FormProduct.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormProductComponent.resx">
       <DependentUpon>FormProductComponent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormProducts.resx">
+      <DependentUpon>FormProducts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormStock.resx">
+      <DependentUpon>FormStock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormStocks.resx">
+      <DependentUpon>FormStocks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTakeOrderInWork.resx">
+      <DependentUpon>FormTakeOrderInWork.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -161,6 +212,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FormPutOnStock.resx">
+      <DependentUpon>FormPutOnStock.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
