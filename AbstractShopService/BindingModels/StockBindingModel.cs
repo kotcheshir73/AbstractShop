@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AbstractShopService.BindingModels
+﻿namespace AbstractShopService.BindingModels
 {
     public class StockBindingModel
     {

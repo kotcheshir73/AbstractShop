@@ -21,6 +21,7 @@ namespace AbstractShopService.ImplementationsList
             List<StockViewModel> result = new List<StockViewModel>();
             for (int i = 0; i < source.Stocks.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов на складе и их количество
                 List<StockComponentViewModel> StockComponents = new List<StockComponentViewModel>();
                 for (int j = 0; j < source.StockComponents.Count; ++j)
                 {
@@ -60,6 +61,7 @@ namespace AbstractShopService.ImplementationsList
         {
             for (int i = 0; i < source.Stocks.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов на складе и их количество
                 List<StockComponentViewModel> StockComponents = new List<StockComponentViewModel>();
                 for (int j = 0; j < source.StockComponents.Count; ++j)
                 {
@@ -143,6 +145,7 @@ namespace AbstractShopService.ImplementationsList
 
         public void DelElement(int id)
         {
+            // при удалении удаляем все записи о компонентах на удаляемом складе
             for (int i = 0; i < source.StockComponents.Count; ++i)
             {
                 if (source.StockComponents[i].StockId == id)

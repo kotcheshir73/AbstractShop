@@ -21,6 +21,7 @@ namespace AbstractShopService.ImplementationsList
             List<ProductViewModel> result = new List<ProductViewModel>();
             for (int i = 0; i < source.Products.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов для изделия и их количество
                 List<ProductComponentViewModel> productComponents = new List<ProductComponentViewModel>();
                 for (int j = 0; j < source.ProductComponents.Count; ++j)
                 {
@@ -53,7 +54,6 @@ namespace AbstractShopService.ImplementationsList
                     ProductComponents = productComponents
                 });
             }
-
             return result;
         }
 
@@ -61,6 +61,7 @@ namespace AbstractShopService.ImplementationsList
         {
             for (int i = 0; i < source.Products.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов для изделия и их количество
                 List<ProductComponentViewModel> productComponents = new List<ProductComponentViewModel>();
                 for (int j = 0; j < source.ProductComponents.Count; ++j)
                 {
@@ -120,6 +121,7 @@ namespace AbstractShopService.ImplementationsList
                 ProductName = model.ProductName,
                 Price = model.Price
             });
+            // компоненты для изделия
             int maxPCId = 0;
             for (int i = 0; i < source.ProductComponents.Count; ++i)
             {
@@ -128,6 +130,21 @@ namespace AbstractShopService.ImplementationsList
                     maxPCId = source.ProductComponents[i].Id;
                 }
             }
+            // убираем дубли по компонентам
+            for (int i = 0; i < model.ProductComponents.Count; ++i)
+            {
+                for (int j = 1; j < model.ProductComponents.Count; ++j)
+                {
+                    if(model.ProductComponents[i].ComponentId ==
+                        model.ProductComponents[j].ComponentId)
+                    {
+                        model.ProductComponents[i].Count +=
+                            model.ProductComponents[j].Count;
+                        model.ProductComponents.RemoveAt(j--);
+                    }
+                }
+            }
+            // добавляем компоненты
             for (int i = 0; i < model.ProductComponents.Count; ++i)
             {
                 source.ProductComponents.Add(new ProductComponent
@@ -169,6 +186,7 @@ namespace AbstractShopService.ImplementationsList
                     maxPCId = source.ProductComponents[i].Id;
                 }
             }
+            // обновляем существуюущие компоненты
             for (int i = 0; i < source.ProductComponents.Count; ++i)
             {
                 if (source.ProductComponents[i].ProductId == model.Id)
@@ -176,6 +194,7 @@ namespace AbstractShopService.ImplementationsList
                     bool flag = true;
                     for (int j = 0; j < model.ProductComponents.Count; ++j)
                     {
+                        // если встретили, то изменяем количество
                         if (source.ProductComponents[i].Id == model.ProductComponents[j].Id)
                         {
                             source.ProductComponents[i].Count = model.ProductComponents[j].Count;
@@ -183,29 +202,47 @@ namespace AbstractShopService.ImplementationsList
                             break;
                         }
                     }
+                    // если не встретили, то удаляем
                     if(flag)
                     {
                         source.ProductComponents.RemoveAt(i--);
                     }
                 }
             }
+            // новые записи
             for(int i = 0; i < model.ProductComponents.Count; ++i)
             {
                 if(model.ProductComponents[i].Id == 0)
                 {
-                    source.ProductComponents.Add(new ProductComponent
+                    // ищем дубли
+                    for (int j = 0; j < source.ProductComponents.Count; ++j)
                     {
-                        Id = ++maxPCId,
-                        ProductId = model.Id,
-                        ComponentId = model.ProductComponents[i].ComponentId,
-                        Count = model.ProductComponents[i].Count
-                    });
+                        if (source.ProductComponents[j].ProductId == model.Id &&
+                            source.ProductComponents[j].ComponentId == model.ProductComponents[i].ComponentId)
+                        {
+                            source.ProductComponents[j].Count += model.ProductComponents[i].Count;
+                            model.ProductComponents[i].Id = source.ProductComponents[j].Id;
+                            break;
+                        }
+                    }
+                    // если не нашли дубли, то новая запись
+                    if (model.ProductComponents[i].Id == 0)
+                    {
+                        source.ProductComponents.Add(new ProductComponent
+                        {
+                            Id = ++maxPCId,
+                            ProductId = model.Id,
+                            ComponentId = model.ProductComponents[i].ComponentId,
+                            Count = model.ProductComponents[i].Count
+                        });
+                    }
                 }
             }
         }
 
         public void DelElement(int id)
         {
+            // удаяем записи по компонентам при удалении изделия
             for (int i = 0; i < source.ProductComponents.Count; ++i)
             {
                 if (source.ProductComponents[i].ProductId == id)

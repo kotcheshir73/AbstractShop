@@ -8,8 +8,6 @@ namespace AbstractShopService.Interfaces
     {
         List<OrderViewModel> GetList();
 
-        OrderViewModel GetElement(int id);
-
         void CreateOrder(OrderBindingModel model);
 
         void TakeOrderInWork(OrderBindingModel model);
