@@ -83,7 +83,7 @@
             this.Controls.Add(this.labelImplementer);
             this.Name = "FormTakeOrderInWork";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Отдать ордер в работу";
+            this.Text = "Отдать заказ в работу";
             this.Load += new System.EventHandler(this.FormTakeOrderInWork_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

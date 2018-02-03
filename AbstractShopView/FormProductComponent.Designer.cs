@@ -103,7 +103,7 @@
             this.Controls.Add(this.labelComponent);
             this.Name = "FormProductComponent";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Компонент продукта";
+            this.Text = "Компонент изделия";
             this.Load += new System.EventHandler(this.FormProductComponent_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

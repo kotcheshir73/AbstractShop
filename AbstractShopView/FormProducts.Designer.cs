@@ -101,7 +101,7 @@
             this.Controls.Add(this.dataGridView);
             this.Name = "FormProducts";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Продукты";
+            this.Text = "Изделия";
             this.Load += new System.EventHandler(this.FormProducts_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.ResumeLayout(false);
