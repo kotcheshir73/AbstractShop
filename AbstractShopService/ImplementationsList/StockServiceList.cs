@@ -4,6 +4,7 @@ using AbstractShopService.Interfaces;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AbstractShopService.ImplementationsList
 {
@@ -18,100 +19,62 @@ namespace AbstractShopService.ImplementationsList
 
         public List<StockViewModel> GetList()
         {
-            List<StockViewModel> result = new List<StockViewModel>();
-            for (int i = 0; i < source.Stocks.Count; ++i)
-            {
-                // требуется дополнительно получить список компонентов на складе и их количество
-                List<StockComponentViewModel> StockComponents = new List<StockComponentViewModel>();
-                for (int j = 0; j < source.StockComponents.Count; ++j)
+            List<StockViewModel> result = source.Stocks
+                .Select(rec => new StockViewModel
                 {
-                    if (source.StockComponents[j].StockId == source.Stocks[i].Id)
-                    {
-                        string componentName = string.Empty;
-                        for (int k = 0; k < source.Components.Count; ++k)
-                        {
-                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                    Id = rec.Id,
+                    StockName = rec.StockName,
+                    StockComponents = source.StockComponents
+                            .Where(recPC => recPC.StockId == rec.Id)
+                            .Select(recPC => new StockComponentViewModel
                             {
-                                componentName = source.Components[k].ComponentName;
-                                break;
-                            }
-                        }
-                        StockComponents.Add(new StockComponentViewModel
-                        {
-                            Id = source.StockComponents[j].Id,
-                            StockId = source.StockComponents[j].StockId,
-                            ComponentId = source.StockComponents[j].ComponentId,
-                            ComponentName = componentName,
-                            Count = source.StockComponents[j].Count
-                        });
-                    }
-                }
-                result.Add(new StockViewModel
-                {
-                    Id = source.Stocks[i].Id,
-                    StockName = source.Stocks[i].StockName,
-                    StockComponents = StockComponents
-                });
-            }
+                                Id = recPC.Id,
+                                StockId = recPC.StockId,
+                                ComponentId = recPC.ComponentId,
+                                ComponentName = source.Components
+                                    .FirstOrDefault(recC => recC.Id == recPC.ComponentId)?.ComponentName,
+                                Count = recPC.Count
+                            })
+                            .ToList()
+                })
+                .ToList();
             return result;
         }
 
         public StockViewModel GetElement(int id)
         {
-            for (int i = 0; i < source.Stocks.Count; ++i)
+            Stock element = source.Stocks.FirstOrDefault(rec => rec.Id == id);
+            if (element != null)
             {
-                // требуется дополнительно получить список компонентов на складе и их количество
-                List<StockComponentViewModel> StockComponents = new List<StockComponentViewModel>();
-                for (int j = 0; j < source.StockComponents.Count; ++j)
+                return new StockViewModel
                 {
-                    if (source.StockComponents[j].StockId == source.Stocks[i].Id)
-                    {
-                        string componentName = string.Empty;
-                        for (int k = 0; k < source.Components.Count; ++k)
-                        {
-                            if (source.ProductComponents[j].ComponentId == source.Components[k].Id)
+                    Id = element.Id,
+                    StockName = element.StockName,
+                    StockComponents = source.StockComponents
+                            .Where(recPC => recPC.StockId == element.Id)
+                            .Select(recPC => new StockComponentViewModel
                             {
-                                componentName = source.Components[k].ComponentName;
-                                break;
-                            }
-                        }
-                        StockComponents.Add(new StockComponentViewModel
-                        {
-                            Id = source.StockComponents[j].Id,
-                            StockId = source.StockComponents[j].StockId,
-                            ComponentId = source.StockComponents[j].ComponentId,
-                            ComponentName = componentName,
-                            Count = source.StockComponents[j].Count
-                        });
-                    }
-                }
-                if (source.Stocks[i].Id == id)
-                {
-                    return new StockViewModel
-                    {
-                        Id = source.Stocks[i].Id,
-                        StockName = source.Stocks[i].StockName,
-                        StockComponents = StockComponents
-                    };
-                }
+                                Id = recPC.Id,
+                                StockId = recPC.StockId,
+                                ComponentId = recPC.ComponentId,
+                                ComponentName = source.Components
+                                    .FirstOrDefault(recC => recC.Id == recPC.ComponentId)?.ComponentName,
+                                Count = recPC.Count
+                            })
+                            .ToList()
+                };
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(StockBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.Stocks.Count; ++i)
+            Stock element = source.Stocks.FirstOrDefault(rec => rec.StockName == model.StockName);
+            if (element != null)
             {
-                if (source.Stocks[i].Id > maxId)
-                {
-                    maxId = source.Stocks[i].Id;
-                }
-                if (source.Stocks[i].StockName == model.StockName)
-                {
-                    throw new Exception("Уже есть склад с таким названием");
-                }
+                throw new Exception("Уже есть склад с таким названием");
             }
+            int maxId = source.Stocks.Count > 0 ? source.Stocks.Max(rec => rec.Id) : 0;
             source.Stocks.Add(new Stock
             {
                 Id = maxId + 1,
@@ -121,45 +84,33 @@ namespace AbstractShopService.ImplementationsList
 
         public void UpdElement(StockBindingModel model)
         {
-            int index = -1;
-            for (int i = 0; i < source.Stocks.Count; ++i)
+            Stock element = source.Stocks.FirstOrDefault(rec =>
+                                        rec.StockName == model.StockName && rec.Id != model.Id);
+            if (element != null)
             {
-                if (source.Stocks[i].Id == model.Id)
-                {
-                    index = i;
-                }
-                if (source.Stocks[i].StockName == model.StockName && 
-                    source.Stocks[i].Id != model.Id)
-                {
-                    throw new Exception("Уже есть склад с таким названием");
-                }
+                throw new Exception("Уже есть склад с таким названием");
             }
-            if (index == -1)
+            element = source.Stocks.FirstOrDefault(rec => rec.Id == model.Id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Stocks[index].StockName = model.StockName;
+            element.StockName = model.StockName;
         }
 
         public void DelElement(int id)
         {
-            // при удалении удаляем все записи о компонентах на удаляемом складе
-            for (int i = 0; i < source.StockComponents.Count; ++i)
+            Stock element = source.Stocks.FirstOrDefault(rec => rec.Id == id);
+            if (element != null)
             {
-                if (source.StockComponents[i].StockId == id)
-                {
-                    source.StockComponents.RemoveAt(i--);
-                }
+                // при удалении удаляем все записи о компонентах на удаляемом складе
+                source.StockComponents.RemoveAll(rec => rec.StockId == id);
+                source.Stocks.Remove(element);
             }
-            for (int i = 0; i < source.Stocks.Count; ++i)
+            else
             {
-                if (source.Stocks[i].Id == id)
-                {
-                    source.Stocks.RemoveAt(i);
-                    return;
-                }
+                throw new Exception("Элемент не найден");
             }
-            throw new Exception("Элемент не найден");
         }
     }
 }

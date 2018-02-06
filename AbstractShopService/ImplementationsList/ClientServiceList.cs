@@ -50,7 +50,7 @@ namespace AbstractShopService.ImplementationsList
             {
                 throw new Exception("Уже есть клиент с таким ФИО");
             }
-            int maxId = source.Clients.Max(rec => rec.Id);
+            int maxId = source.Clients.Count > 0 ? source.Clients.Max(rec => rec.Id) : 0;
             source.Clients.Add(new Client
             {
                 Id = maxId + 1,
@@ -60,8 +60,8 @@ namespace AbstractShopService.ImplementationsList
 
         public void UpdElement(ClientBindingModel model)
         {
-            Client element = source.Clients.FirstOrDefault(rec => rec.ClientFIO == model.ClientFIO && 
-                                                                        rec.Id != model.Id);
+            Client element = source.Clients.FirstOrDefault(rec => 
+                                    rec.ClientFIO == model.ClientFIO && rec.Id != model.Id);
             if (element != null)
             {
                 throw new Exception("Уже есть клиент с таким ФИО");
@@ -81,7 +81,10 @@ namespace AbstractShopService.ImplementationsList
             {
                 source.Clients.Remove(element);
             }
-            throw new Exception("Элемент не найден");
+            else
+            {
+                throw new Exception("Элемент не найден");
+            }
         }
     }
 }
