@@ -120,7 +120,7 @@ namespace AbstractShopService.ImplementationsList
                             countOnStocks += source.StockComponents[j].Count;
                         }
                     }
-                    if(countOnStocks < source.ProductComponents[i].Count)
+                    if(countOnStocks < source.ProductComponents[i].Count * source.Orders[index].Count)
                     {
                         for (int j = 0; j < source.Components.Count; ++j)
                         {
@@ -138,7 +138,7 @@ namespace AbstractShopService.ImplementationsList
             {
                 if (source.ProductComponents[i].ProductId == source.Orders[index].ProductId)
                 {
-                    int countOnStocks = source.ProductComponents[i].Count;
+                    int countOnStocks = source.ProductComponents[i].Count * source.Orders[index].Count;
                     for (int j = 0; j < source.StockComponents.Count; ++j)
                     {
                         if (source.StockComponents[j].ComponentId == source.ProductComponents[i].ComponentId)
