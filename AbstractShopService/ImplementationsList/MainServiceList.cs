@@ -71,7 +71,7 @@ namespace AbstractShopService.ImplementationsList
                 int countOnStocks = source.StockComponents
                                             .Where(rec => rec.ComponentId == productComponent.ComponentId)
                                             .Sum(rec => rec.Count);
-                if (countOnStocks < productComponent.Count)
+                if (countOnStocks < productComponent.Count * element.Count)
                 {
                     var componentName = source.Components
                                     .FirstOrDefault(rec => rec.Id == productComponent.ComponentId);
