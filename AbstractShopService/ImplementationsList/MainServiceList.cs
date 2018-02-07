@@ -82,7 +82,7 @@ namespace AbstractShopService.ImplementationsList
             // списываем
             foreach (var productComponent in productComponents)
             {
-                int countOnStocks = productComponent.Count;
+                int countOnStocks = productComponent.Count * element.Count;
                 var stockComponents = source.StockComponents
                                             .Where(rec => rec.ComponentId == productComponent.ComponentId);
                 foreach (var stockComponent in stockComponents)
