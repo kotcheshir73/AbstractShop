@@ -83,10 +83,9 @@ namespace AbstractShopService.ImplementationsList
                 ProductName = model.ProductName,
                 Price = model.Price
             });
-
-
             // компоненты для изделия
-            int maxPCId = source.ProductComponents.Count > 0 ? source.ProductComponents.Max(rec => rec.Id) : 0;
+            int maxPCId = source.ProductComponents.Count > 0 ? 
+                                    source.ProductComponents.Max(rec => rec.Id) : 0;
             // убираем дубли по компонентам
             var groupComponents = model.ProductComponents
                                         .GroupBy(rec => rec.ComponentId)
@@ -123,7 +122,6 @@ namespace AbstractShopService.ImplementationsList
             }
             element.ProductName = model.ProductName;
             element.Price = model.Price;
-
 
             int maxPCId = source.ProductComponents.Count > 0 ? source.ProductComponents.Max(rec => rec.Id) : 0;
             // обновляем существуюущие компоненты
