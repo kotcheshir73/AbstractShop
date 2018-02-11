@@ -1,6 +1,9 @@
-﻿using AbstractShopService.ImplementationsList;
+﻿using AbstractShopService;
+using AbstractShopService.ImplementationsBD;
+using AbstractShopService.ImplementationsList;
 using AbstractShopService.Interfaces;
 using System;
+using System.Data.Entity;
 using System.Windows.Forms;
 using Unity;
 using Unity.Lifetime;
@@ -25,12 +28,13 @@ namespace AbstractShopView
         public static IUnityContainer BuildUnityContainer()
         {
             var currentContainer = new UnityContainer();
-            currentContainer.RegisterType<IClientService, ClientServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IComponentService, ComponentServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IImplementerService, ImplementerServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IProductService, ProductServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IStockService, StockServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IMainService, MainServiceList>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<DbContext, AbstractDbContext>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IClientService, ClientServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IComponentService, ComponentServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IImplementerService, ImplementerServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IProductService, ProductServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IStockService, StockServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IMainService, MainServiceBD>(new HierarchicalLifetimeManager());
             
             return currentContainer;
         }

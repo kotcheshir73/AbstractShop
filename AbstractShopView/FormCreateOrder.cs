@@ -64,7 +64,7 @@ namespace AbstractShopView
                     int id = Convert.ToInt32(comboBoxProduct.SelectedValue);
                     ProductViewModel product = serviceP.GetElement(id);
                     int count = Convert.ToInt32(textBoxCount.Text);
-                    textBoxSum.Text = (count * product.Price).ToString();
+                    textBoxSum.Text = (count * (int)product.Price).ToString();
                 }
                 catch(Exception ex)
                 {

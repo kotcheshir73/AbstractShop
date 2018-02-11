@@ -30,7 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -40,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractDbContext.cs" />
     <Compile Include="BindingModels\ClientBindingModel.cs" />
     <Compile Include="BindingModels\ComponentBindingModel.cs" />
     <Compile Include="BindingModels\ImplementerBindingModel.cs" />
@@ -49,6 +57,12 @@
     <Compile Include="BindingModels\StockBindingModel.cs" />
     <Compile Include="BindingModels\StockComponentBindingModel.cs" />
     <Compile Include="DataList.cs" />
+    <Compile Include="ImplementationsBD\ClientServiceBD.cs" />
+    <Compile Include="ImplementationsBD\ComponentServiceBD.cs" />
+    <Compile Include="ImplementationsBD\ImplementerServiceBD.cs" />
+    <Compile Include="ImplementationsBD\MainServiceBD.cs" />
+    <Compile Include="ImplementationsBD\ProductServiceBD.cs" />
+    <Compile Include="ImplementationsBD\StockServiceBD.cs" />
     <Compile Include="ImplementationsList\ClientServiceList.cs" />
     <Compile Include="ImplementationsList\ComponentServiceList.cs" />
     <Compile Include="ImplementationsList\ImplementerServiceList.cs" />
@@ -61,6 +75,11 @@
     <Compile Include="Interfaces\IMainService.cs" />
     <Compile Include="Interfaces\IProductService.cs" />
     <Compile Include="Interfaces\IStockService.cs" />
+    <Compile Include="Migrations\201802101957532_FirstMigration.cs" />
+    <Compile Include="Migrations\201802101957532_FirstMigration.Designer.cs">
+      <DependentUpon>201802101957532_FirstMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\ComponentViewModel.cs" />
@@ -76,6 +95,16 @@
       <Project>{5edcfafa-0f3a-4810-8489-4d221a86ad1e}</Project>
       <Name>AbstractShopModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201802101957532_FirstMigration.resx">
+      <DependentUpon>201802101957532_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
