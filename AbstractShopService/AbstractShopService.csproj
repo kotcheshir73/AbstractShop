@@ -36,6 +36,16 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -62,6 +72,7 @@
     <Compile Include="ImplementationsBD\ImplementerServiceBD.cs" />
     <Compile Include="ImplementationsBD\MainServiceBD.cs" />
     <Compile Include="ImplementationsBD\ProductServiceBD.cs" />
+    <Compile Include="ImplementationsBD\ReportServiceBD.cs" />
     <Compile Include="ImplementationsBD\StockServiceBD.cs" />
     <Compile Include="ImplementationsList\ClientServiceList.cs" />
     <Compile Include="ImplementationsList\ComponentServiceList.cs" />
@@ -74,6 +85,7 @@
     <Compile Include="Interfaces\IImplementerService.cs" />
     <Compile Include="Interfaces\IMainService.cs" />
     <Compile Include="Interfaces\IProductService.cs" />
+    <Compile Include="Interfaces\IReportService.cs" />
     <Compile Include="Interfaces\IStockService.cs" />
     <Compile Include="Migrations\201802101957532_FirstMigration.cs" />
     <Compile Include="Migrations\201802101957532_FirstMigration.Designer.cs">
@@ -87,6 +99,7 @@
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\ProductComponentViewModel.cs" />
     <Compile Include="ViewModels\ProductViewModel.cs" />
+    <Compile Include="ViewModels\ReportViewModel.cs" />
     <Compile Include="ViewModels\StockComponentViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />
   </ItemGroup>

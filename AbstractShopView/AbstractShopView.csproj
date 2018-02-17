@@ -154,6 +154,12 @@
     <Compile Include="FormStocks.Designer.cs">
       <DependentUpon>FormStocks.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormStocksLoad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStocksLoad.Designer.cs">
+      <DependentUpon>FormStocksLoad.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormTakeOrderInWork.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -206,6 +212,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormStocks.resx">
       <DependentUpon>FormStocks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormStocksLoad.resx">
+      <DependentUpon>FormStocksLoad.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormTakeOrderInWork.resx">
       <DependentUpon>FormTakeOrderInWork.cs</DependentUpon>
