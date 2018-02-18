@@ -36,6 +36,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
@@ -64,6 +67,7 @@
     <Compile Include="BindingModels\OrderBindingModel.cs" />
     <Compile Include="BindingModels\ProductBindingModel.cs" />
     <Compile Include="BindingModels\ProductComponentBindingModel.cs" />
+    <Compile Include="BindingModels\ReportBindingModel.cs" />
     <Compile Include="BindingModels\StockBindingModel.cs" />
     <Compile Include="BindingModels\StockComponentBindingModel.cs" />
     <Compile Include="DataList.cs" />
@@ -93,6 +97,11 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\ComponentViewModel.cs" />
     <Compile Include="ViewModels\ImplementerViewModel.cs" />
@@ -112,11 +121,16 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Resources\TIMCYR.TTF" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201802101957532_FirstMigration.resx">
       <DependentUpon>201802101957532_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

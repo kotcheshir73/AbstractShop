@@ -1,10 +1,6 @@
-﻿using AbstractShopModel;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbstractShopService.Interfaces
 {
@@ -15,5 +11,9 @@ namespace AbstractShopService.Interfaces
         List<StocksLoadViewModel> GetStocksLoad();
 
         void SaveStocksLoad(string fileName);
+
+        List<ClientOrdersModel> GetClientOrders(ReportBindingModel model);
+
+        void SaveClientOrders(string fileName, ReportBindingModel model);
     }
 }

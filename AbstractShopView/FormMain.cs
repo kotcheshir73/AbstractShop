@@ -163,5 +163,11 @@ namespace AbstractShopView
             var form = Container.Resolve<FormStocksLoad>();
             form.ShowDialog();
         }
+
+        private void заказыКлиентовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormClientOrders>();
+            form.ShowDialog();
+        }
     }
 }
