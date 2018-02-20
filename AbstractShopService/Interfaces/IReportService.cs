@@ -6,14 +6,14 @@ namespace AbstractShopService.Interfaces
 {
     public interface IReportService
     {
-        void SaveProductPrice(string fileName);
+        void SaveProductPrice(ReportBindingModel model);
 
         List<StocksLoadViewModel> GetStocksLoad();
 
-        void SaveStocksLoad(string fileName);
+        void SaveStocksLoad(ReportBindingModel model);
 
         List<ClientOrdersModel> GetClientOrders(ReportBindingModel model);
 
-        void SaveClientOrders(string fileName, ReportBindingModel model);
+        void SaveClientOrders(ReportBindingModel model);
     }
 }

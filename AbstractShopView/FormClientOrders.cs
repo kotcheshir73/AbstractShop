@@ -73,8 +73,9 @@ namespace AbstractShopView
             {
                 try
                 {
-                    service.SaveClientOrders(sfd.FileName, new ReportBindingModel
+                    service.SaveClientOrders(new ReportBindingModel
                     {
+                        FileName = sfd.FileName,
                         DateFrom = dateTimePickerFrom.Value,
                         DateTo = dateTimePickerTo.Value
                     });

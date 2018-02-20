@@ -4,8 +4,10 @@ namespace AbstractShopService.BindingModels
 {
     public class ReportBindingModel
     {
-        public DateTime DateFrom { get; set; }
+        public string FileName { get; set; }
 
-        public DateTime DateTo { get; set; }
+        public DateTime? DateFrom { get; set; }
+
+        public DateTime? DateTo { get; set; }
     }
 }

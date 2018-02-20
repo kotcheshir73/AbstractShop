@@ -23,11 +23,11 @@ namespace AbstractShopService.ImplementationsBD
             this.context = context;
         }
 
-        public void SaveProductPrice(string fileName)
+        public void SaveProductPrice(ReportBindingModel model)
         {
-            if (File.Exists(fileName))
+            if (File.Exists(model.FileName))
             {
-                File.Delete(fileName);
+                File.Delete(model.FileName);
             }
 
             var winword = new Microsoft.Office.Interop.Word.Application();
@@ -35,7 +35,8 @@ namespace AbstractShopService.ImplementationsBD
             {
                 object missing = System.Reflection.Missing.Value;
                 //создаем документ
-                Microsoft.Office.Interop.Word.Document document = winword.Documents.Add(ref missing, ref missing, ref missing, ref missing);
+                Microsoft.Office.Interop.Word.Document document = 
+                    winword.Documents.Add(ref missing, ref missing, ref missing, ref missing);
                 //получаем ссылку на параграф
                 var paragraph = document.Paragraphs.Add(missing);
                 var range = paragraph.Range;
@@ -97,7 +98,7 @@ namespace AbstractShopService.ImplementationsBD
                 range.InsertParagraphAfter();
                 //сохраняем
                 object fileFormat = WdSaveFormat.wdFormatXMLDocument;
-                document.SaveAs(fileName, ref fileFormat, ref missing,
+                document.SaveAs(model.FileName, ref fileFormat, ref missing,
                     ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing,
                     ref missing, ref missing, ref missing, ref missing,
@@ -125,24 +126,24 @@ namespace AbstractShopService.ImplementationsBD
                                     stock => stock,
                                     stockComponent => stockComponent.Stock,
                                     (stock, stockCompList) =>
-                                        new StocksLoadViewModel
-                                        {
-                                            StockName = stock.StockName,
-                                            TotalCount = stockCompList.Sum(r => r.Count),
-                                            Components = stockCompList.Select(r => new Tuple<string, int>(r.Component.ComponentName, r.Count))
-                                        })
+            new StocksLoadViewModel
+            {
+                StockName = stock.StockName,
+                TotalCount = stockCompList.Sum(r => r.Count),
+                Components = stockCompList.Select(r => new Tuple<string, int>(r.Component.ComponentName, r.Count))
+            })
                             .ToList();
         }
 
-        public void SaveStocksLoad(string fileName)
+        public void SaveStocksLoad(ReportBindingModel model)
         {
             var excel = new Microsoft.Office.Interop.Excel.Application();
             try
             {
                 //или создаем excel-файл, или открываем существующий
-                if (File.Exists(fileName))
+                if (File.Exists(model.FileName))
                 {
-                    excel.Workbooks.Open(fileName, Type.Missing, Type.Missing, Type.Missing, 
+                    excel.Workbooks.Open(model.FileName, Type.Missing, Type.Missing, Type.Missing, 
                         Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
                         Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
                         Type.Missing);
@@ -151,7 +152,7 @@ namespace AbstractShopService.ImplementationsBD
                 {
                     excel.SheetsInNewWorkbook = 1;
                     excel.Workbooks.Add(Type.Missing);
-                    excel.Workbooks[1].SaveAs(fileName, XlFileFormat.xlExcel8, Type.Missing, 
+                    excel.Workbooks[1].SaveAs(model.FileName, XlFileFormat.xlExcel8, Type.Missing, 
                         Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, Type.Missing, 
                         Type.Missing, Type.Missing, Type.Missing, Type.Missing);
                 }
@@ -202,14 +203,17 @@ namespace AbstractShopService.ImplementationsBD
                         if (elem.Components.Count() > 0)
                         {
                             //получаем ячейкт для выбеления рамки под таблицу
-                            var excelBorder = excelworksheet.get_Range(excelcells, excelcells.get_Offset(elem.Components.Count() - 1, 1));
+                            var excelBorder = 
+                                excelworksheet.get_Range(excelcells, 
+                                            excelcells.get_Offset(elem.Components.Count() - 1, 1));
                             excelBorder.Borders.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
                             excelBorder.Borders.Weight = Microsoft.Office.Interop.Excel.XlBorderWeight.xlThin;
                             excelBorder.HorizontalAlignment = Constants.xlCenter;
                             excelBorder.VerticalAlignment = Constants.xlCenter;
                             excelBorder.BorderAround(Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous,
                                                     Microsoft.Office.Interop.Excel.XlBorderWeight.xlMedium,
-                                                    Microsoft.Office.Interop.Excel.XlColorIndex.xlColorIndexAutomatic, 1);
+                                                    Microsoft.Office.Interop.Excel.XlColorIndex.xlColorIndexAutomatic, 
+                                                    1);
 
                             foreach (var listElem in elem.Components)
                             {
@@ -261,13 +265,15 @@ namespace AbstractShopService.ImplementationsBD
                             .ToList();
         }
 
-        public void SaveClientOrders(string fileName, ReportBindingModel model)
+        public void SaveClientOrders(ReportBindingModel model)
         {
             //из ресрусов получаем шрифт для кирилицы
             if (!File.Exists("TIMCYR.TTF"))
+            {
                 File.WriteAllBytes("TIMCYR.TTF", Properties.Resources.TIMCYR);
+            }
             //открываем файл для работы
-            FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fs = new FileStream(model.FileName, FileMode.OpenOrCreate, FileAccess.Write);
             //создаем документ, задаем границы, связываем документ и поток
             iTextSharp.text.Document doc = new iTextSharp.text.Document();
             doc.SetMargins(0.5f, 0.5f, 0.5f, 0.5f);
@@ -286,8 +292,8 @@ namespace AbstractShopService.ImplementationsBD
             };
             doc.Add(paragraph);
 
-            var phrasePeriod = new Phrase("c " + model.DateFrom.ToShortDateString() +
-                                    " по " + model.DateTo.ToShortDateString(),
+            var phrasePeriod = new Phrase("c " + model.DateFrom.Value.ToShortDateString() +
+                                    " по " + model.DateTo.Value.ToShortDateString(),
                                     new iTextSharp.text.Font(baseFont, 14, iTextSharp.text.Font.BOLD));
             paragraph = new iTextSharp.text.Paragraph(phrasePeriod)
             {

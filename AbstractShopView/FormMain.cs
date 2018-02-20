@@ -1,4 +1,5 @@
-﻿using AbstractShopService.Interfaces;
+﻿using AbstractShopService.BindingModels;
+using AbstractShopService.Interfaces;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -148,7 +149,10 @@ namespace AbstractShopView
             {
                 try
                 {
-                    reportService.SaveProductPrice(sfd.FileName);
+                    reportService.SaveProductPrice(new ReportBindingModel
+                    {
+                        FileName = sfd.FileName
+                    });
                     MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
