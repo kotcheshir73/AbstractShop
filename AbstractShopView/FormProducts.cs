@@ -1,24 +1,19 @@
-﻿using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProducts : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
+        private InterfacesName type = InterfacesName.IProductService;
 
-        private readonly IProductService service;
-
-        public FormProducts(IProductService service)
+        public FormProducts()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProducts_Load(object sender, EventArgs e)
@@ -30,12 +25,22 @@ namespace AbstractShopView
         {
             try
             {
-                List<ProductViewModel> list = service.GetList();
-                if (list != null)
+                RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.GetList };
+                var response = TSPClient<ProductViewModel>.SendRequest(model);
+
+                if (response.Success)
                 {
-                    dataGridView.DataSource = list;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    List<ProductViewModel> list = response.ResponseList;
+                    if (list != null)
+                    {
+                        dataGridView.DataSource = list;
+                        dataGridView.Columns[0].Visible = false;
+                        dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
                 }
             }
             catch (Exception ex)
@@ -46,7 +51,7 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormProduct>();
+            var form = new FormProduct();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
@@ -57,7 +62,7 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormProduct>();
+                var form = new FormProduct();
                 form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -75,7 +80,12 @@ namespace AbstractShopView
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.DelElement, Request = id };
+                        var response = TSPClient<ClientViewModel>.SendRequest(model);
+                        if (!response.Success)
+                        {
+                            throw new Exception(response.ErrorMessage);
+                        }
                     }
                     catch (Exception ex)
                     {

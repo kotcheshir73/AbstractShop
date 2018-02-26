@@ -1,50 +1,47 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
+using AbstractShopService.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormStocksLoad : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
+        private InterfacesName type = InterfacesName.IReportService;
 
-        private readonly IReportService service;
-
-        public FormStocksLoad(IReportService service)
+        public FormStocksLoad()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormStocksLoad_Load(object sender, EventArgs e)
         {
             try
             {
-                var dict = service.GetStocksLoad();
-                if (dict != null)
+                RequestModel model = new RequestModel
+                {
+                    InterfaceName = type,
+                    MethodName = MethodsName.GetStocksLoad
+                };
+                var response = TSPClient<StocksLoadViewModel>.SendRequest(model);
+                if (response.Success)
                 {
                     dataGridView.Rows.Clear();
-                    foreach (var elem in dict)
+                    foreach (var elem in response.ResponseList)
                     {
                         dataGridView.Rows.Add(new object[] { elem.StockName, "", "" });
                         foreach (var listElem in elem.Components)
                         {
-                            dataGridView.Rows.Add(new object[] { "", listElem.Item1, listElem.Item2 });
+                            dataGridView.Rows.Add(new object[] { "", listElem.ComponentName, listElem.Count });
                         }
                         dataGridView.Rows.Add(new object[] { "Итого", "", elem.TotalCount });
                         dataGridView.Rows.Add(new object[] { });
                     }
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
                 }
             }
             catch (Exception ex)
@@ -63,11 +60,24 @@ namespace AbstractShopView
             {
                 try
                 {
-                    service.SaveStocksLoad(new ReportBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        FileName = sfd.FileName
-                    });
-                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        InterfaceName = type,
+                        MethodName = MethodsName.SaveStocksLoad,
+                        Request = new ReportBindingModel
+                        {
+                            FileName = sfd.FileName
+                        }
+                    };
+                    var response = TSPClient<OrderViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
+                    }
                 }
                 catch (Exception ex)
                 {

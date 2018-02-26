@@ -1,52 +1,56 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormPutOnStock : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IStockService serviceS;
-
-        private readonly IComponentService serviceC;
-
-        private readonly IMainService serviceM;
-
-        public FormPutOnStock(IStockService serviceS, IComponentService serviceC, IMainService serviceM)
+        public FormPutOnStock()
         {
             InitializeComponent();
-            this.serviceS = serviceS;
-            this.serviceC = serviceC;
-            this.serviceM = serviceM;
         }
 
         private void FormPutOnStock_Load(object sender, EventArgs e)
         {
             try
             {
-                List<ComponentViewModel> listC = serviceC.GetList();
-                if (listC != null)
+                RequestModel modelC = new RequestModel { InterfaceName = InterfacesName.IComponentService, MethodName = MethodsName.GetList };
+                var responseC = TSPClient<ComponentViewModel>.SendRequest(modelC);
+                if (responseC.Success)
                 {
-                    comboBoxComponent.DisplayMember = "ComponentName";
-                    comboBoxComponent.ValueMember = "Id";
-                    comboBoxComponent.DataSource = listC;
-                    comboBoxComponent.SelectedItem = null;
+                    List<ComponentViewModel> list = responseC.ResponseList;
+                    if (list != null)
+                    {
+                        comboBoxComponent.DisplayMember = "ComponentName";
+                        comboBoxComponent.ValueMember = "Id";
+                        comboBoxComponent.DataSource = list;
+                        comboBoxComponent.SelectedItem = null;
+                    }
                 }
-                List<StockViewModel> listS = serviceS.GetList();
-                if (listS != null)
+                else
                 {
-                    comboBoxStock.DisplayMember = "StockName";
-                    comboBoxStock.ValueMember = "Id";
-                    comboBoxStock.DataSource = listS;
-                    comboBoxStock.SelectedItem = null;
+                    throw new Exception(responseC.ErrorMessage);
+                }
+                RequestModel modelS = new RequestModel { InterfaceName = InterfacesName.IStockService, MethodName = MethodsName.GetList };
+                var responseS = TSPClient<StockViewModel>.SendRequest(modelS);
+                if (responseS.Success)
+                {
+                    List<StockViewModel> list = responseS.ResponseList;
+                    if (list != null)
+                    {
+                        comboBoxStock.DisplayMember = "StockName";
+                        comboBoxStock.ValueMember = "Id";
+                        comboBoxStock.DataSource = list;
+                        comboBoxStock.SelectedItem = null;
+                    }
+                }
+                else
+                {
+                    throw new Exception(responseS.ErrorMessage);
                 }
             }
             catch (Exception ex)
@@ -74,15 +78,28 @@ namespace AbstractShopView
             }
             try
             {
-                serviceM.PutComponentOnStock(new StockComponentBindingModel
+                RequestModel model = new RequestModel
                 {
-                    ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
-                    StockId = Convert.ToInt32(comboBoxStock.SelectedValue),
-                    Count = Convert.ToInt32(textBoxCount.Text)
-                });
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                    InterfaceName = InterfacesName.IMainService,
+                    MethodName = MethodsName.PutComponentOnStock,
+                    Request = new StockComponentBindingModel
+                    {
+                        ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
+                        StockId = Convert.ToInt32(comboBoxStock.SelectedValue),
+                        Count = Convert.ToInt32(textBoxCount.Text)
+                    }
+                };
+                ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

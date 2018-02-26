@@ -1,43 +1,42 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormMain : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IMainService service;
-
-        private readonly IReportService reportService;
-
-        public FormMain(IMainService service, IReportService reportService)
+        public FormMain()
         {
             InitializeComponent();
-            this.service = service;
-            this.reportService = reportService;
         }
 
         private void LoadData()
         {
             try
             {
-                List<OrderViewModel> list = service.GetList();
-                if (list != null)
+                RequestModel model = new RequestModel { InterfaceName = InterfacesName.IMainService, MethodName = MethodsName.GetList };
+                var response = TSPClient<OrderViewModel>.SendRequest(model);
+
+                if (response.Success)
                 {
-                    dataGridView.DataSource = list;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].Visible = false;
-                    dataGridView.Columns[3].Visible = false;
-                    dataGridView.Columns[5].Visible = false;
-                    dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    List<OrderViewModel> list = response.ResponseList;
+                    if (list != null)
+                    {
+                        dataGridView.DataSource = list;
+                        dataGridView.Columns[0].Visible = false;
+                        dataGridView.Columns[1].Visible = false;
+                        dataGridView.Columns[3].Visible = false;
+                        dataGridView.Columns[5].Visible = false;
+                        dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
                 }
             }
             catch (Exception ex)
@@ -48,43 +47,43 @@ namespace AbstractShopView
 
         private void клиентыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormClients>();
+            var form = new FormClients();
             form.ShowDialog();
         }
 
         private void компонентыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormComponents>();
+            var form = new FormComponents();
             form.ShowDialog();
         }
 
         private void изделияToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormProducts>();
+            var form = new FormProducts();
             form.ShowDialog();
         }
 
         private void складыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormStocks>();
+            var form = new FormStocks();
             form.ShowDialog();
         }
 
         private void сотрудникиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormImplementers>();
+            var form = new FormImplementers();
             form.ShowDialog();
         }
 
         private void пополнитьСкладToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormPutOnStock>();
+            var form = new FormPutOnStock();
             form.ShowDialog();
         }
 
         private void buttonCreateOrder_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormCreateOrder>();
+            var form = new FormCreateOrder();
             form.ShowDialog();
             LoadData();
         }
@@ -93,8 +92,10 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormTakeOrderInWork>();
-                form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                var form = new FormTakeOrderInWork
+                {
+                    Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value)
+                };
                 form.ShowDialog();
                 LoadData();
             }
@@ -107,8 +108,21 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    service.FinishOrder(id);
-                    LoadData();
+                    RequestModel model = new RequestModel
+                    {
+                        InterfaceName = InterfacesName.IMainService,
+                        MethodName = MethodsName.FinishOrder,
+                        Request = id
+                    };
+                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -124,8 +138,21 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    service.PayOrder(id);
-                    LoadData();
+                    RequestModel model = new RequestModel
+                    {
+                        InterfaceName = InterfacesName.IMainService,
+                        MethodName = MethodsName.PayOrder,
+                        Request = id
+                    };
+                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -149,11 +176,24 @@ namespace AbstractShopView
             {
                 try
                 {
-                    reportService.SaveProductPrice(new ReportBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        FileName = sfd.FileName
-                    });
-                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        InterfaceName = InterfacesName.IReportService,
+                        MethodName = MethodsName.SaveProductPrice,
+                        Request = new ReportBindingModel
+                        {
+                            FileName = sfd.FileName
+                        }
+                    };
+                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -164,13 +204,13 @@ namespace AbstractShopView
 
         private void загруженностьСкладовToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormStocksLoad>();
+            var form = new FormStocksLoad();
             form.ShowDialog();
         }
 
         private void заказыКлиентовToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormClientOrders>();
+            var form = new FormClientOrders();
             form.ShowDialog();
         }
     }

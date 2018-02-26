@@ -1,28 +1,22 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormStock : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
 
-        private readonly IStockService service;
+        private InterfacesName type = InterfacesName.IStockService;
 
         private int? id;
 
-        public FormStock(IStockService service)
+        public FormStock()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormStock_Load(object sender, EventArgs e)
@@ -31,15 +25,25 @@ namespace AbstractShopView
             {
                 try
                 {
-                    StockViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    RequestModel model = new RequestModel
                     {
-                        textBoxName.Text = view.StockName;
-                        dataGridView.DataSource = view.StockComponents;
+                        InterfaceName = type,
+                        MethodName = MethodsName.GetElement,
+                        Request = id.Value
+                    };
+                    var response = TSPClient<StockViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        textBoxName.Text = response.Response.StockName;
+                        dataGridView.DataSource = response.Response.StockComponents;
                         dataGridView.Columns[0].Visible = false;
                         dataGridView.Columns[1].Visible = false;
                         dataGridView.Columns[2].Visible = false;
                         dataGridView.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
                     }
                 }
                 catch (Exception ex)
@@ -58,24 +62,44 @@ namespace AbstractShopView
             }
             try
             {
+                ResponseModel<StockViewModel> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new StockBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        Id = id.Value,
-                        StockName = textBoxName.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.UpdElement,
+                        Request = new StockBindingModel
+                        {
+                            Id = id.Value,
+                            StockName = textBoxName.Text
+                        }
+                    };
+                    response = TSPClient<StockViewModel>.SendRequest(model);
                 }
                 else
                 {
-                    service.AddElement(new StockBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        StockName = textBoxName.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.AddElement,
+                        Request = new StockBindingModel
+                        {
+                            StockName = textBoxName.Text
+                        }
+                    };
+                    response = TSPClient<StockViewModel>.SendRequest(model);
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

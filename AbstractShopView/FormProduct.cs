@@ -1,31 +1,25 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProduct : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
 
-        private readonly IProductService service;
+        private InterfacesName type = InterfacesName.IProductService;
 
         private int? id;
 
         private List<ProductComponentViewModel> productComponents;
 
-        public FormProduct(IProductService service)
+        public FormProduct()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProduct_Load(object sender, EventArgs e)
@@ -34,13 +28,23 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ProductViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    RequestModel model = new RequestModel
                     {
-                        textBoxName.Text = view.ProductName;
-                        textBoxPrice.Text = view.Price.ToString();
-                        productComponents = view.ProductComponents;
+                        InterfaceName = type,
+                        MethodName = MethodsName.GetElement,
+                        Request = id.Value
+                    };
+                    var response = TSPClient<ProductViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        textBoxName.Text = response.Response.ProductName;
+                        textBoxPrice.Text = response.Response.Price.ToString();
+                        productComponents = response.Response.ProductComponents;
                         LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
                     }
                 }
                 catch (Exception ex)
@@ -76,7 +80,7 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormProductComponent>();
+            var form = new FormProductComponent();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 if(form.Model != null)
@@ -95,7 +99,7 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormProductComponent>();
+                var form = new FormProductComponent();
                 form.Model = productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex];
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -148,6 +152,7 @@ namespace AbstractShopView
             }
             try
             {
+                ResponseModel<ProductViewModel> response;
                 List<ProductComponentBindingModel> productComponentBM = new List<ProductComponentBindingModel>();
                 for (int i = 0; i < productComponents.Count; ++i)
                 {
@@ -161,26 +166,45 @@ namespace AbstractShopView
                 }
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ProductBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        Id = id.Value,
-                        ProductName = textBoxName.Text,
-                        Price = Convert.ToInt32(textBoxPrice.Text),
-                        ProductComponents = productComponentBM
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.UpdElement,
+                        Request = new ProductBindingModel
+                        {
+                            Id = id.Value,
+                            ProductName = textBoxName.Text,
+                            Price = Convert.ToInt32(textBoxPrice.Text),
+                            ProductComponents = productComponentBM
+                        }
+                    };
+                    response = TSPClient<ProductViewModel>.SendRequest(model);
                 }
                 else
                 {
-                    service.AddElement(new ProductBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        ProductName = textBoxName.Text,
-                        Price = Convert.ToInt32(textBoxPrice.Text),
-                        ProductComponents = productComponentBM
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.AddElement,
+                        Request = new ProductBindingModel
+                        {
+                            ProductName = textBoxName.Text,
+                            Price = Convert.ToInt32(textBoxPrice.Text),
+                            ProductComponents = productComponentBM
+                        }
+                    };
+                    response = TSPClient<ProductViewModel>.SendRequest(model);
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

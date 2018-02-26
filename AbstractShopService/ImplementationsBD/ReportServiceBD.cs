@@ -130,7 +130,7 @@ namespace AbstractShopService.ImplementationsBD
             {
                 StockName = stock.StockName,
                 TotalCount = stockCompList.Sum(r => r.Count),
-                Components = stockCompList.Select(r => new Tuple<string, int>(r.Component.ComponentName, r.Count))
+                Components = stockCompList.Select(r => new StocksComponentLoadViewModel { ComponentName = r.Component.ComponentName, Count = r.Count }).ToList()
             })
                             .ToList();
         }
@@ -217,9 +217,9 @@ namespace AbstractShopService.ImplementationsBD
 
                             foreach (var listElem in elem.Components)
                             {
-                                excelcells.Value2 = listElem.Item1;
+                                excelcells.Value2 = listElem.ComponentName;
                                 excelcells.ColumnWidth = 10;
-                                excelcells.get_Offset(0, 1).Value2 = listElem.Item2;
+                                excelcells.get_Offset(0, 1).Value2 = listElem.Count;
                                 excelcells = excelcells.get_Offset(1, 0);
                             }
                         }

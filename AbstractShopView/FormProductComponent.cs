@@ -1,41 +1,40 @@
-﻿using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProductComponent : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public ProductComponentViewModel Model { set { model = value; }  get { return model; } }
 
-        private readonly IComponentService service;
+        private InterfacesName type = InterfacesName.IComponentService;
 
         private ProductComponentViewModel model;
 
-        public FormProductComponent(IComponentService service)
+        public FormProductComponent()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProductComponent_Load(object sender, EventArgs e)
         {
             try
             {
-                List<ComponentViewModel> list = service.GetList();
-                if (list != null)
+                RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.GetList };
+                var response = TSPClient<ComponentViewModel>.SendRequest(model);
+                if (response.Success)
                 {
                     comboBoxComponent.DisplayMember = "ComponentName";
                     comboBoxComponent.ValueMember = "Id";
-                    comboBoxComponent.DataSource = list;
+                    comboBoxComponent.DataSource = response.ResponseList;
                     comboBoxComponent.SelectedItem = null;
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
                 }
             }
             catch (Exception ex)

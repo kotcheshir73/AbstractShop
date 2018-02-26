@@ -1,28 +1,22 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormComponent : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
 
-        private readonly IComponentService service;
+        private InterfacesName type = InterfacesName.IComponentService;
 
         private int? id;
 
-        public FormComponent(IComponentService service)
+        public FormComponent()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormComponent_Load(object sender, EventArgs e)
@@ -31,10 +25,20 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ComponentViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    RequestModel model = new RequestModel
                     {
-                        textBoxName.Text = view.ComponentName;
+                        InterfaceName = type,
+                        MethodName = MethodsName.GetElement,
+                        Request = id.Value
+                    };
+                    var response = TSPClient<ComponentViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        textBoxName.Text = response.Response.ComponentName;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
                     }
                 }
                 catch (Exception ex)
@@ -53,24 +57,44 @@ namespace AbstractShopView
             }
             try
             {
+                ResponseModel<ComponentViewModel> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ComponentBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        Id = id.Value,
-                        ComponentName = textBoxName.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.UpdElement,
+                        Request = new ComponentBindingModel
+                        {
+                            Id = id.Value,
+                            ComponentName = textBoxName.Text
+                        }
+                    };
+                    response = TSPClient<ComponentViewModel>.SendRequest(model);
                 }
                 else
                 {
-                    service.AddElement(new ComponentBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        ComponentName = textBoxName.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.AddElement,
+                        Request = new ComponentBindingModel
+                        {
+                            ComponentName = textBoxName.Text
+                        }
+                    };
+                    response = TSPClient<ComponentViewModel>.SendRequest(model);
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

@@ -1,38 +1,21 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormTakeOrderInWork : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IImplementerService serviceI;
-
-        private readonly IMainService serviceM;
 
         private int? id;
 
-        public FormTakeOrderInWork(IImplementerService serviceI, IMainService serviceM)
+        public FormTakeOrderInWork()
         {
             InitializeComponent();
-            this.serviceI = serviceI;
-            this.serviceM = serviceM;
         }
 
         private void FormTakeOrderInWork_Load(object sender, EventArgs e)
@@ -44,13 +27,22 @@ namespace AbstractShopView
                     MessageBox.Show("Не указан заказ", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                 }
-                List<ImplementerViewModel> listI = serviceI.GetList();
-                if (listI != null)
+                RequestModel modelI = new RequestModel { InterfaceName = InterfacesName.IImplementerService, MethodName = MethodsName.GetList };
+                var responseI = TSPClient<ImplementerViewModel>.SendRequest(modelI);
+                if (responseI.Success)
                 {
-                    comboBoxImplementer.DisplayMember = "ImplementerFIO";
-                    comboBoxImplementer.ValueMember = "Id";
-                    comboBoxImplementer.DataSource = listI;
-                    comboBoxImplementer.SelectedItem = null;
+                    List<ImplementerViewModel> list = responseI.ResponseList;
+                    if (list != null)
+                    {
+                        comboBoxImplementer.DisplayMember = "ImplementerFIO";
+                        comboBoxImplementer.ValueMember = "Id";
+                        comboBoxImplementer.DataSource = list;
+                        comboBoxImplementer.SelectedItem = null;
+                    }
+                }
+                else
+                {
+                    throw new Exception(responseI.ErrorMessage);
                 }
             }
             catch (Exception ex)
@@ -68,14 +60,27 @@ namespace AbstractShopView
             }
             try
             {
-                serviceM.TakeOrderInWork(new OrderBindingModel
+                RequestModel model = new RequestModel
                 {
-                    Id = id.Value,
-                    ImplementerId = Convert.ToInt32(comboBoxImplementer.SelectedValue)
-                });
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                    InterfaceName = InterfacesName.IMainService,
+                    MethodName = MethodsName.TakeOrderInWork,
+                    Request = new OrderBindingModel
+                    {
+                        Id = id.Value,
+                        ImplementerId = Convert.ToInt32(comboBoxImplementer.SelectedValue)
+                    }
+                };
+                ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

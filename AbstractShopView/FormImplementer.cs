@@ -1,28 +1,22 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormImplementer : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
 
-        private readonly IImplementerService service;
+        private InterfacesName type = InterfacesName.IImplementerService;
 
         private int? id;
 
-        public FormImplementer(IImplementerService service)
+        public FormImplementer()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormImplementer_Load(object sender, EventArgs e)
@@ -31,10 +25,20 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ImplementerViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    RequestModel model = new RequestModel
                     {
-                        textBoxFIO.Text = view.ImplementerFIO;
+                        InterfaceName = type,
+                        MethodName = MethodsName.GetElement,
+                        Request = id.Value
+                    };
+                    var response = TSPClient<ImplementerViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        textBoxFIO.Text = response.Response.ImplementerFIO;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
                     }
                 }
                 catch (Exception ex)
@@ -53,24 +57,44 @@ namespace AbstractShopView
             }
             try
             {
+                ResponseModel<ImplementerViewModel> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ImplementerBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        Id = id.Value,
-                        ImplementerFIO = textBoxFIO.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.UpdElement,
+                        Request = new ImplementerBindingModel
+                        {
+                            Id = id.Value,
+                            ImplementerFIO = textBoxFIO.Text
+                        }
+                    };
+                    response = TSPClient<ImplementerViewModel>.SendRequest(model);
                 }
                 else
                 {
-                    service.AddElement(new ImplementerBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        ImplementerFIO = textBoxFIO.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.AddElement,
+                        Request = new ImplementerBindingModel
+                        {
+                            ImplementerFIO = textBoxFIO.Text
+                        }
+                    };
+                    response = TSPClient<ImplementerViewModel>.SendRequest(model);
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {

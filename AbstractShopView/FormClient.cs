@@ -1,28 +1,22 @@
-﻿using AbstractShopService.BindingModels;
-using AbstractShopService.Interfaces;
+﻿using AbstractShopService;
+using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormClient : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IClientService service;
 
         private int? id;
 
-        public FormClient(IClientService service)
+        private InterfacesName type = InterfacesName.IClientService;
+
+        public FormClient()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormClient_Load(object sender, EventArgs e)
@@ -31,10 +25,20 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ClientViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    RequestModel model = new RequestModel
                     {
-                        textBoxFIO.Text = view.ClientFIO;
+                        InterfaceName = type,
+                        MethodName = MethodsName.GetElement,
+                        Request = id.Value
+                    };
+                    var response = TSPClient<ClientViewModel>.SendRequest(model);
+                    if (response.Success)
+                    {
+                        textBoxFIO.Text = response.Response.ClientFIO;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ErrorMessage);
                     }
                 }
                 catch (Exception ex)
@@ -46,31 +50,51 @@ namespace AbstractShopView
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(textBoxFIO.Text))
+            if (string.IsNullOrEmpty(textBoxFIO.Text))
             {
                 MessageBox.Show("Заполните ФИО", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             try
             {
+                ResponseModel<ClientViewModel> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ClientBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        Id = id.Value,
-                        ClientFIO = textBoxFIO.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.UpdElement,
+                        Request = new ClientBindingModel
+                        {
+                            Id = id.Value,
+                            ClientFIO = textBoxFIO.Text
+                        }
+                    };
+                    response = TSPClient<ClientViewModel>.SendRequest(model);
                 }
                 else
                 {
-                    service.AddElement(new ClientBindingModel
+                    RequestModel model = new RequestModel
                     {
-                        ClientFIO = textBoxFIO.Text
-                    });
+                        InterfaceName = type,
+                        MethodName = MethodsName.AddElement,
+                        Request = new ClientBindingModel
+                        {
+                            ClientFIO = textBoxFIO.Text
+                        }
+                    };
+                    response = TSPClient<ClientViewModel>.SendRequest(model);
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Success)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {
