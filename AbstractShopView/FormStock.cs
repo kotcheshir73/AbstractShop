@@ -1,7 +1,8 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -9,8 +10,6 @@ namespace AbstractShopView
     public partial class FormStock : Form
     {
         public int Id { set { id = value; } }
-
-        private InterfacesName type = InterfacesName.IStockService;
 
         private int? id;
 
@@ -25,17 +24,12 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.GetRequest("api/Stock/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.GetElement,
-                        Request = id.Value
-                    };
-                    var response = TSPClient<StockViewModel>.SendRequest(model);
-                    if (response.Success)
-                    {
-                        textBoxName.Text = response.Response.StockName;
-                        dataGridView.DataSource = response.Response.StockComponents;
+                        var stock = APIClient.GetElement<StockViewModel>(response);
+                        textBoxName.Text = stock.StockName;
+                        dataGridView.DataSource = stock.StockComponents;
                         dataGridView.Columns[0].Visible = false;
                         dataGridView.Columns[1].Visible = false;
                         dataGridView.Columns[2].Visible = false;
@@ -43,7 +37,7 @@ namespace AbstractShopView
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -62,35 +56,23 @@ namespace AbstractShopView
             }
             try
             {
-                ResponseModel<StockViewModel> response;
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Stock/UpdElement", new StockBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.UpdElement,
-                        Request = new StockBindingModel
-                        {
-                            Id = id.Value,
-                            StockName = textBoxName.Text
-                        }
-                    };
-                    response = TSPClient<StockViewModel>.SendRequest(model);
+                        Id = id.Value,
+                        StockName = textBoxName.Text
+                    });
                 }
                 else
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Stock/AddElement", new StockBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.AddElement,
-                        Request = new StockBindingModel
-                        {
-                            StockName = textBoxName.Text
-                        }
-                    };
-                    response = TSPClient<StockViewModel>.SendRequest(model);
+                        StockName = textBoxName.Text
+                    });
                 }
-                if (response.Success)
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -98,7 +80,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

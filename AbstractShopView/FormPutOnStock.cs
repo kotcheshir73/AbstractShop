@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -18,11 +17,10 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel modelC = new RequestModel { InterfaceName = InterfacesName.IComponentService, MethodName = MethodsName.GetList };
-                var responseC = TSPClient<ComponentViewModel>.SendRequest(modelC);
-                if (responseC.Success)
+                var responseC = APIClient.GetRequest("api/Component/GetList");
+                if (responseC.Result.IsSuccessStatusCode)
                 {
-                    List<ComponentViewModel> list = responseC.ResponseList;
+                    List<ComponentViewModel> list = APIClient.GetElement<List<ComponentViewModel>>(responseC);
                     if (list != null)
                     {
                         comboBoxComponent.DisplayMember = "ComponentName";
@@ -33,13 +31,12 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(responseC.ErrorMessage);
+                    throw new Exception(APIClient.GetError(responseC));
                 }
-                RequestModel modelS = new RequestModel { InterfaceName = InterfacesName.IStockService, MethodName = MethodsName.GetList };
-                var responseS = TSPClient<StockViewModel>.SendRequest(modelS);
-                if (responseS.Success)
+                var responseS = APIClient.GetRequest("api/Stock/GetList");
+                if (responseS.Result.IsSuccessStatusCode)
                 {
-                    List<StockViewModel> list = responseS.ResponseList;
+                    List<StockViewModel> list = APIClient.GetElement<List<StockViewModel>>(responseS);
                     if (list != null)
                     {
                         comboBoxStock.DisplayMember = "StockName";
@@ -50,7 +47,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(responseS.ErrorMessage);
+                    throw new Exception(APIClient.GetError(responseC));
                 }
             }
             catch (Exception ex)
@@ -78,19 +75,13 @@ namespace AbstractShopView
             }
             try
             {
-                RequestModel model = new RequestModel
+                var response = APIClient.PostRequest("api/Main/PutComponentOnStock", new StockComponentBindingModel
                 {
-                    InterfaceName = InterfacesName.IMainService,
-                    MethodName = MethodsName.PutComponentOnStock,
-                    Request = new StockComponentBindingModel
-                    {
-                        ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
-                        StockId = Convert.ToInt32(comboBoxStock.SelectedValue),
-                        Count = Convert.ToInt32(textBoxCount.Text)
-                    }
-                };
-                ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                if (response.Success)
+                    ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
+                    StockId = Convert.ToInt32(comboBoxStock.SelectedValue),
+                    Count = Convert.ToInt32(textBoxCount.Text)
+                });
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -98,7 +89,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

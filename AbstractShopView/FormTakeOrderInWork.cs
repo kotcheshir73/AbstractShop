@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -27,11 +26,10 @@ namespace AbstractShopView
                     MessageBox.Show("Не указан заказ", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                 }
-                RequestModel modelI = new RequestModel { InterfaceName = InterfacesName.IImplementerService, MethodName = MethodsName.GetList };
-                var responseI = TSPClient<ImplementerViewModel>.SendRequest(modelI);
-                if (responseI.Success)
+                var response = APIClient.GetRequest("api/Implementer/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    List<ImplementerViewModel> list = responseI.ResponseList;
+                    List<ImplementerViewModel> list = APIClient.GetElement<List<ImplementerViewModel>>(response);
                     if (list != null)
                     {
                         comboBoxImplementer.DisplayMember = "ImplementerFIO";
@@ -42,7 +40,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(responseI.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -60,18 +58,12 @@ namespace AbstractShopView
             }
             try
             {
-                RequestModel model = new RequestModel
+                var response = APIClient.PostRequest("api/Main/TakeOrderInWork", new OrderBindingModel
                 {
-                    InterfaceName = InterfacesName.IMainService,
-                    MethodName = MethodsName.TakeOrderInWork,
-                    Request = new OrderBindingModel
-                    {
-                        Id = id.Value,
-                        ImplementerId = Convert.ToInt32(comboBoxImplementer.SelectedValue)
-                    }
-                };
-                ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                if (response.Success)
+                    Id = id.Value,
+                    ImplementerId = Convert.ToInt32(comboBoxImplementer.SelectedValue)
+                });
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -79,7 +71,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

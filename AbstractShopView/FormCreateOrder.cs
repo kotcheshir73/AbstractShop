@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -18,11 +17,10 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel modelC = new RequestModel { InterfaceName = InterfacesName.IClientService, MethodName = MethodsName.GetList };
-                var responseC = TSPClient<ClientViewModel>.SendRequest(modelC);
-                if (responseC.Success)
+                var responseC = APIClient.GetRequest("api/Client/GetList");
+                if (responseC.Result.IsSuccessStatusCode)
                 {
-                    List<ClientViewModel> list = responseC.ResponseList;
+                    List<ClientViewModel> list = APIClient.GetElement<List<ClientViewModel>>(responseC);
                     if (list != null)
                     {
                         comboBoxClient.DisplayMember = "ClientFIO";
@@ -33,13 +31,12 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(responseC.ErrorMessage);
+                    throw new Exception(APIClient.GetError(responseC));
                 }
-                RequestModel modelP = new RequestModel { InterfaceName = InterfacesName.IProductService, MethodName = MethodsName.GetList };
-                var responseP = TSPClient<ProductViewModel>.SendRequest(modelP);
-                if (responseP.Success)
+                var responseP = APIClient.GetRequest("api/Product/GetList");
+                if (responseP.Result.IsSuccessStatusCode)
                 {
-                    List<ProductViewModel> list = responseP.ResponseList;
+                    List<ProductViewModel> list = APIClient.GetElement<List<ProductViewModel>>(responseP);
                     if (list != null)
                     {
                         comboBoxProduct.DisplayMember = "ProductName";
@@ -50,7 +47,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(responseP.ErrorMessage);
+                    throw new Exception(APIClient.GetError(responseP));
                 }
             }
             catch (Exception ex)
@@ -66,17 +63,16 @@ namespace AbstractShopView
                 try
                 {
                     int id = Convert.ToInt32(comboBoxProduct.SelectedValue);
-                    RequestModel modelP = new RequestModel { InterfaceName = InterfacesName.IProductService, MethodName = MethodsName.GetElement, Request = id };
-                    var responseP = TSPClient<ProductViewModel>.SendRequest(modelP);
-                    if (responseP.Success)
+                    var responseP = APIClient.GetRequest("api/Product/Get/" + id);
+                    if (responseP.Result.IsSuccessStatusCode)
                     {
-                        ProductViewModel product = responseP.Response;
+                        ProductViewModel product = APIClient.GetElement<ProductViewModel>(responseP);
                         int count = Convert.ToInt32(textBoxCount.Text);
                         textBoxSum.Text = (count * (int)product.Price).ToString();
                     }
                     else
                     {
-                        throw new Exception(responseP.ErrorMessage);
+                        throw new Exception(APIClient.GetError(responseP));
                     }
                 }
                 catch(Exception ex)
@@ -115,20 +111,14 @@ namespace AbstractShopView
             }
             try
             {
-                RequestModel model = new RequestModel
+                var response = APIClient.PostRequest("api/Main/CreateOrder", new OrderBindingModel
                 {
-                    InterfaceName = InterfacesName.IMainService,
-                    MethodName = MethodsName.CreateOrder,
-                    Request = new OrderBindingModel
-                    {
-                        ClientId = Convert.ToInt32(comboBoxClient.SelectedValue),
-                        ProductId = Convert.ToInt32(comboBoxProduct.SelectedValue),
-                        Count = Convert.ToInt32(textBoxCount.Text),
-                        Sum = Convert.ToInt32(textBoxSum.Text)
-                    }
-                };
-                ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                if (response.Success)
+                    ClientId = Convert.ToInt32(comboBoxClient.SelectedValue),
+                    ProductId = Convert.ToInt32(comboBoxProduct.SelectedValue),
+                    Count = Convert.ToInt32(textBoxCount.Text),
+                    Sum = Convert.ToInt32(textBoxSum.Text)
+                });
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -136,7 +126,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

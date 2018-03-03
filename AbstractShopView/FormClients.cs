@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,6 @@ namespace AbstractShopView
 {
     public partial class FormClients : Form
     {
-        private InterfacesName type = InterfacesName.IClientService;
-
         public FormClients()
         {
             InitializeComponent();
@@ -25,12 +22,10 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.GetList };
-                var response = TSPClient<ClientViewModel>.SendRequest(model);
-
-                if (response.Success)
+                var response = APIClient.GetRequest("api/Client/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    List<ClientViewModel> list = response.ResponseList;
+                    List<ClientViewModel> list = APIClient.GetElement<List<ClientViewModel>>(response);
                     if (list != null)
                     {
                         dataGridView.DataSource = list;
@@ -40,7 +35,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -52,7 +47,7 @@ namespace AbstractShopView
         private void buttonAdd_Click(object sender, EventArgs e)
         {
             var form = new FormClient();
-            if(form.ShowDialog() == DialogResult.OK)
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
             }
@@ -60,7 +55,7 @@ namespace AbstractShopView
 
         private void buttonUpd_Click(object sender, EventArgs e)
         {
-            if(dataGridView.SelectedRows.Count == 1)
+            if (dataGridView.SelectedRows.Count == 1)
             {
                 var form = new FormClient();
                 form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
@@ -75,16 +70,15 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                if(MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.DelElement, Request = id };
-                        var response = TSPClient<ClientViewModel>.SendRequest(model);
-                        if (!response.Success)
+                        var response = APIClient.PostRequest("api/Client/DelElement", new ClientBindingModel { Id = id });
+                        if (!response.Result.IsSuccessStatusCode)
                         {
-                            throw new Exception(response.ErrorMessage);
+                            throw new Exception(APIClient.GetError(response));
                         }
                     }
                     catch (Exception ex)

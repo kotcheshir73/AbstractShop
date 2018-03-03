@@ -1,7 +1,6 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
-using AbstractShopService.ViewModels;
+﻿using AbstractShopService.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -9,8 +8,6 @@ namespace AbstractShopView
     public partial class FormProductComponent : Form
     {
         public ProductComponentViewModel Model { set { model = value; }  get { return model; } }
-
-        private InterfacesName type = InterfacesName.IComponentService;
 
         private ProductComponentViewModel model;
 
@@ -23,18 +20,17 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.GetList };
-                var response = TSPClient<ComponentViewModel>.SendRequest(model);
-                if (response.Success)
+                var response = APIClient.GetRequest("api/Component/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
                     comboBoxComponent.DisplayMember = "ComponentName";
                     comboBoxComponent.ValueMember = "Id";
-                    comboBoxComponent.DataSource = response.ResponseList;
+                    comboBoxComponent.DataSource = APIClient.GetElement<List<ComponentViewModel>>(response);
                     comboBoxComponent.SelectedItem = null;
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

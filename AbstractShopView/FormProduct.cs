@@ -1,8 +1,9 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -10,8 +11,6 @@ namespace AbstractShopView
     public partial class FormProduct : Form
     {
         public int Id { set { id = value; } }
-
-        private InterfacesName type = InterfacesName.IProductService;
 
         private int? id;
 
@@ -28,23 +27,18 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.GetRequest("api/Product/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.GetElement,
-                        Request = id.Value
-                    };
-                    var response = TSPClient<ProductViewModel>.SendRequest(model);
-                    if (response.Success)
-                    {
-                        textBoxName.Text = response.Response.ProductName;
-                        textBoxPrice.Text = response.Response.Price.ToString();
-                        productComponents = response.Response.ProductComponents;
+                        var product = APIClient.GetElement<ProductViewModel>(response);
+                        textBoxName.Text = product.ProductName;
+                        textBoxPrice.Text = product.Price.ToString();
+                        productComponents = product.ProductComponents;
                         LoadData();
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -152,7 +146,6 @@ namespace AbstractShopView
             }
             try
             {
-                ResponseModel<ProductViewModel> response;
                 List<ProductComponentBindingModel> productComponentBM = new List<ProductComponentBindingModel>();
                 for (int i = 0; i < productComponents.Count; ++i)
                 {
@@ -164,38 +157,27 @@ namespace AbstractShopView
                         Count = productComponents[i].Count
                     });
                 }
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Product/UpdElement", new ProductBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.UpdElement,
-                        Request = new ProductBindingModel
-                        {
-                            Id = id.Value,
-                            ProductName = textBoxName.Text,
-                            Price = Convert.ToInt32(textBoxPrice.Text),
-                            ProductComponents = productComponentBM
-                        }
-                    };
-                    response = TSPClient<ProductViewModel>.SendRequest(model);
+                        Id = id.Value,
+                        ProductName = textBoxName.Text,
+                        Price = Convert.ToInt32(textBoxPrice.Text),
+                        ProductComponents = productComponentBM
+                    });
                 }
                 else
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Product/AddElement", new ProductBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.AddElement,
-                        Request = new ProductBindingModel
-                        {
-                            ProductName = textBoxName.Text,
-                            Price = Convert.ToInt32(textBoxPrice.Text),
-                            ProductComponents = productComponentBM
-                        }
-                    };
-                    response = TSPClient<ProductViewModel>.SendRequest(model);
+                        ProductName = textBoxName.Text,
+                        Price = Convert.ToInt32(textBoxPrice.Text),
+                        ProductComponents = productComponentBM
+                    });
                 }
-                if (response.Success)
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -203,7 +185,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

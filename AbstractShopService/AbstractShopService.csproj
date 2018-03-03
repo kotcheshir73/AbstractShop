@@ -69,7 +69,6 @@
     <Compile Include="BindingModels\ProductBindingModel.cs" />
     <Compile Include="BindingModels\ProductComponentBindingModel.cs" />
     <Compile Include="BindingModels\ReportBindingModel.cs" />
-    <Compile Include="BindingModels\RequestModel.cs" />
     <Compile Include="BindingModels\StockBindingModel.cs" />
     <Compile Include="BindingModels\StockComponentBindingModel.cs" />
     <Compile Include="DataList.cs" />
@@ -86,7 +85,6 @@
     <Compile Include="ImplementationsList\MainServiceList.cs" />
     <Compile Include="ImplementationsList\ProductServiceList.cs" />
     <Compile Include="ImplementationsList\StockServiceList.cs" />
-    <Compile Include="InterfacesName.cs" />
     <Compile Include="Interfaces\IClientService.cs" />
     <Compile Include="Interfaces\IComponentService.cs" />
     <Compile Include="Interfaces\IImplementerService.cs" />
@@ -94,7 +92,6 @@
     <Compile Include="Interfaces\IProductService.cs" />
     <Compile Include="Interfaces\IReportService.cs" />
     <Compile Include="Interfaces\IStockService.cs" />
-    <Compile Include="MethodsName.cs" />
     <Compile Include="Migrations\201802101957532_FirstMigration.cs" />
     <Compile Include="Migrations\201802101957532_FirstMigration.Designer.cs">
       <DependentUpon>201802101957532_FirstMigration.cs</DependentUpon>
@@ -113,7 +110,6 @@
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\ProductComponentViewModel.cs" />
     <Compile Include="ViewModels\ProductViewModel.cs" />
-    <Compile Include="ViewModels\ResponseModel.cs" />
     <Compile Include="ViewModels\StockComponentViewModel.cs" />
     <Compile Include="ViewModels\StocksLoadViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />

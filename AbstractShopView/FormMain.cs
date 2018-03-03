@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -12,18 +11,17 @@ namespace AbstractShopView
         public FormMain()
         {
             InitializeComponent();
+            APIClient.Connect();
         }
 
         private void LoadData()
         {
             try
             {
-                RequestModel model = new RequestModel { InterfaceName = InterfacesName.IMainService, MethodName = MethodsName.GetList };
-                var response = TSPClient<OrderViewModel>.SendRequest(model);
-
-                if (response.Success)
+                var response = APIClient.GetRequest("api/Main/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    List<OrderViewModel> list = response.ResponseList;
+                    List<OrderViewModel> list = APIClient.GetElement<List<OrderViewModel>>(response);
                     if (list != null)
                     {
                         dataGridView.DataSource = list;
@@ -36,7 +34,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -108,20 +106,17 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.PostRequest("api/Main/FinishOrder", new OrderBindingModel
                     {
-                        InterfaceName = InterfacesName.IMainService,
-                        MethodName = MethodsName.FinishOrder,
-                        Request = id
-                    };
-                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                    if (response.Success)
+                        Id = id
+                    });
+                    if (response.Result.IsSuccessStatusCode)
                     {
                         LoadData();
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -138,20 +133,17 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.PostRequest("api/Main/.PayOrder", new OrderBindingModel
                     {
-                        InterfaceName = InterfacesName.IMainService,
-                        MethodName = MethodsName.PayOrder,
-                        Request = id
-                    };
-                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                    if (response.Success)
+                        Id = id
+                    });
+                    if (response.Result.IsSuccessStatusCode)
                     {
                         LoadData();
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -176,23 +168,17 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.PostRequest("api/Report/SaveProductPrice", new ReportBindingModel
                     {
-                        InterfaceName = InterfacesName.IReportService,
-                        MethodName = MethodsName.SaveProductPrice,
-                        Request = new ReportBindingModel
-                        {
-                            FileName = sfd.FileName
-                        }
-                    };
-                    ResponseModel<OrderViewModel> response = TSPClient<OrderViewModel>.SendRequest(model);
-                    if (response.Success)
+                        FileName = sfd.FileName
+                    });
+                    if (response.Result.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)

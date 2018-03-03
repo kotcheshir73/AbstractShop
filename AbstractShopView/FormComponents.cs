@@ -1,5 +1,4 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,6 @@ namespace AbstractShopView
 {
     public partial class FormComponents : Form
     {
-        private InterfacesName type = InterfacesName.IComponentService;
-
         public FormComponents()
         {
             InitializeComponent();
@@ -25,12 +22,10 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.GetList };
-                var response = TSPClient<ComponentViewModel>.SendRequest(model);
-
-                if (response.Success)
+                var response = APIClient.GetRequest("api/Component/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    List<ComponentViewModel> list = response.ResponseList;
+                    List<ComponentViewModel> list = APIClient.GetElement<List<ComponentViewModel>>(response);
                     if (list != null)
                     {
                         dataGridView.DataSource = list;
@@ -40,7 +35,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -80,11 +75,10 @@ namespace AbstractShopView
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        RequestModel model = new RequestModel { InterfaceName = type, MethodName = MethodsName.DelElement, Request = id };
-                        var response = TSPClient<ClientViewModel>.SendRequest(model);
-                        if (!response.Success)
+                        var response = APIClient.PostRequest("api/Component/DelElement", new ClientBindingModel { Id = id });
+                        if (!response.Result.IsSuccessStatusCode)
                         {
-                            throw new Exception(response.ErrorMessage);
+                            throw new Exception(APIClient.GetError(response));
                         }
                     }
                     catch (Exception ex)

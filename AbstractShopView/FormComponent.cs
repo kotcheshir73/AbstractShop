@@ -1,7 +1,8 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -9,8 +10,6 @@ namespace AbstractShopView
     public partial class FormComponent : Form
     {
         public int Id { set { id = value; } }
-
-        private InterfacesName type = InterfacesName.IComponentService;
 
         private int? id;
 
@@ -25,20 +24,15 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.GetRequest("api/Component/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.GetElement,
-                        Request = id.Value
-                    };
-                    var response = TSPClient<ComponentViewModel>.SendRequest(model);
-                    if (response.Success)
-                    {
-                        textBoxName.Text = response.Response.ComponentName;
+                        var component = APIClient.GetElement<ComponentViewModel>(response);
+                        textBoxName.Text = component.ComponentName;
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -57,35 +51,23 @@ namespace AbstractShopView
             }
             try
             {
-                ResponseModel<ComponentViewModel> response;
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Component/UpdElement", new ComponentBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.UpdElement,
-                        Request = new ComponentBindingModel
-                        {
-                            Id = id.Value,
-                            ComponentName = textBoxName.Text
-                        }
-                    };
-                    response = TSPClient<ComponentViewModel>.SendRequest(model);
+                        Id = id.Value,
+                        ComponentName = textBoxName.Text
+                    });
                 }
                 else
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Component/AddElement", new ComponentBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.AddElement,
-                        Request = new ComponentBindingModel
-                        {
-                            ComponentName = textBoxName.Text
-                        }
-                    };
-                    response = TSPClient<ComponentViewModel>.SendRequest(model);
+                        ComponentName = textBoxName.Text
+                    });
                 }
-                if (response.Success)
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -93,7 +75,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

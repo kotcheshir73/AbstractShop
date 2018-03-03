@@ -1,16 +1,14 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using Microsoft.Reporting.WinForms;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AbstractShopView
 {
     public partial class FormClientOrders : Form
     {
-        private InterfacesName type = InterfacesName.IReportService;
-
         public FormClientOrders()
         {
             InitializeComponent();
@@ -30,26 +28,20 @@ namespace AbstractShopView
                                             " по " + dateTimePickerTo.Value.ToShortDateString());
                 reportViewer.LocalReport.SetParameters(parameter);
 
-                RequestModel model = new RequestModel
+                var response = APIClient.PostRequest("api/Report/GetClientOrders", new ReportBindingModel
                 {
-                    InterfaceName = type,
-                    MethodName = MethodsName.GetClientOrders,
-                    Request = new ReportBindingModel
-                    {
-                        DateFrom = dateTimePickerFrom.Value,
-                        DateTo = dateTimePickerTo.Value
-                    }
-                };
-                var response = TSPClient<ClientOrdersModel>.SendRequest(model);
-                if (response.Success)
+                    DateFrom = dateTimePickerFrom.Value,
+                    DateTo = dateTimePickerTo.Value
+                });
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    var dataSource = response.ResponseList;
+                    var dataSource = APIClient.GetElement<List<ClientOrdersModel>>(response);
                     ReportDataSource source = new ReportDataSource("DataSetOrders", dataSource);
                     reportViewer.LocalReport.DataSources.Add(source);
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
 
                 reportViewer.RefreshReport();
@@ -75,25 +67,19 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.PostRequest("api/Report/SaveClientOrders", new ReportBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.SaveClientOrders,
-                        Request = new ReportBindingModel
-                        {
-                            FileName = sfd.FileName,
-                            DateFrom = dateTimePickerFrom.Value,
-                            DateTo = dateTimePickerTo.Value
-                        }
-                    };
-                    var response = TSPClient<OrderViewModel>.SendRequest(model);
-                    if (response.Success)
+                        FileName = sfd.FileName,
+                        DateFrom = dateTimePickerFrom.Value,
+                        DateTo = dateTimePickerTo.Value
+                    });
+                    if (response.Result.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)

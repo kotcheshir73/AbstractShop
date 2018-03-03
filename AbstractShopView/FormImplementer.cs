@@ -1,7 +1,8 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -9,8 +10,6 @@ namespace AbstractShopView
     public partial class FormImplementer : Form
     {
         public int Id { set { id = value; } }
-
-        private InterfacesName type = InterfacesName.IImplementerService;
 
         private int? id;
 
@@ -25,20 +24,15 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.GetRequest("api/Implementer/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.GetElement,
-                        Request = id.Value
-                    };
-                    var response = TSPClient<ImplementerViewModel>.SendRequest(model);
-                    if (response.Success)
-                    {
-                        textBoxFIO.Text = response.Response.ImplementerFIO;
+                        var implementer = APIClient.GetElement<ImplementerViewModel>(response);
+                        textBoxFIO.Text = implementer.ImplementerFIO;
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -57,35 +51,23 @@ namespace AbstractShopView
             }
             try
             {
-                ResponseModel<ImplementerViewModel> response;
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Implementer/UpdElement", new ImplementerBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.UpdElement,
-                        Request = new ImplementerBindingModel
-                        {
-                            Id = id.Value,
-                            ImplementerFIO = textBoxFIO.Text
-                        }
-                    };
-                    response = TSPClient<ImplementerViewModel>.SendRequest(model);
+                        Id = id.Value,
+                        ImplementerFIO = textBoxFIO.Text
+                    });
                 }
                 else
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Implementer/AddElement", new ImplementerBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.AddElement,
-                        Request = new ImplementerBindingModel
-                        {
-                            ImplementerFIO = textBoxFIO.Text
-                        }
-                    };
-                    response = TSPClient<ImplementerViewModel>.SendRequest(model);
+                        ImplementerFIO = textBoxFIO.Text
+                    });
                 }
-                if (response.Success)
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -93,7 +75,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

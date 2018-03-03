@@ -1,7 +1,8 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AbstractShopView
@@ -11,9 +12,7 @@ namespace AbstractShopView
         public int Id { set { id = value; } }
 
         private int? id;
-
-        private InterfacesName type = InterfacesName.IClientService;
-
+        
         public FormClient()
         {
             InitializeComponent();
@@ -25,20 +24,15 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.GetRequest("api/Client/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.GetElement,
-                        Request = id.Value
-                    };
-                    var response = TSPClient<ClientViewModel>.SendRequest(model);
-                    if (response.Success)
-                    {
-                        textBoxFIO.Text = response.Response.ClientFIO;
+                        var client = APIClient.GetElement<ClientViewModel>(response);
+                        textBoxFIO.Text = client.ClientFIO;
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -57,35 +51,23 @@ namespace AbstractShopView
             }
             try
             {
-                ResponseModel<ClientViewModel> response;
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Client/UpdElement", new ClientBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.UpdElement,
-                        Request = new ClientBindingModel
-                        {
-                            Id = id.Value,
-                            ClientFIO = textBoxFIO.Text
-                        }
-                    };
-                    response = TSPClient<ClientViewModel>.SendRequest(model);
+                        Id = id.Value,
+                        ClientFIO = textBoxFIO.Text
+                    });
                 }
                 else
                 {
-                    RequestModel model = new RequestModel
+                    response = APIClient.PostRequest("api/Client/AddElement", new ClientBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.AddElement,
-                        Request = new ClientBindingModel
-                        {
-                            ClientFIO = textBoxFIO.Text
-                        }
-                    };
-                    response = TSPClient<ClientViewModel>.SendRequest(model);
+                        ClientFIO = textBoxFIO.Text
+                    });
                 }
-                if (response.Success)
+                if (response.Result.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     DialogResult = DialogResult.OK;
@@ -93,7 +75,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

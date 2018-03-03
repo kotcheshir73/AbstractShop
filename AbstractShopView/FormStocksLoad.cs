@@ -1,15 +1,13 @@
-﻿using AbstractShopService;
-using AbstractShopService.BindingModels;
+﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AbstractShopView
 {
     public partial class FormStocksLoad : Form
     {
-        private InterfacesName type = InterfacesName.IReportService;
-
         public FormStocksLoad()
         {
             InitializeComponent();
@@ -19,16 +17,11 @@ namespace AbstractShopView
         {
             try
             {
-                RequestModel model = new RequestModel
-                {
-                    InterfaceName = type,
-                    MethodName = MethodsName.GetStocksLoad
-                };
-                var response = TSPClient<StocksLoadViewModel>.SendRequest(model);
-                if (response.Success)
+                var response = APIClient.GetRequest("api/Report/GetStocksLoad");
+                if (response.Result.IsSuccessStatusCode)
                 {
                     dataGridView.Rows.Clear();
-                    foreach (var elem in response.ResponseList)
+                    foreach (var elem in APIClient.GetElement<List<StocksLoadViewModel>>(response))
                     {
                         dataGridView.Rows.Add(new object[] { elem.StockName, "", "" });
                         foreach (var listElem in elem.Components)
@@ -41,7 +34,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    throw new Exception(response.ErrorMessage);
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -60,23 +53,17 @@ namespace AbstractShopView
             {
                 try
                 {
-                    RequestModel model = new RequestModel
+                    var response = APIClient.PostRequest("api/Report/SaveStocksLoad", new ReportBindingModel
                     {
-                        InterfaceName = type,
-                        MethodName = MethodsName.SaveStocksLoad,
-                        Request = new ReportBindingModel
-                        {
-                            FileName = sfd.FileName
-                        }
-                    };
-                    var response = TSPClient<OrderViewModel>.SendRequest(model);
-                    if (response.Success)
+                        FileName = sfd.FileName
+                    });
+                    if (response.Result.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        throw new Exception(response.ErrorMessage);
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
