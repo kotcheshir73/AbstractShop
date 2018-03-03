@@ -11,7 +11,6 @@ namespace AbstractShopView
         public FormMain()
         {
             InitializeComponent();
-            APIClient.Connect();
         }
 
         private void LoadData()
