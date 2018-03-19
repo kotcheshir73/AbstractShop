@@ -1,7 +1,6 @@
 ﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,24 +23,20 @@ namespace AbstractShopView
             {
                 try
                 {
-                    var response = APIClient.GetRequest("api/Stock/Get/" + id.Value);
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        var stock = APIClient.GetElement<StockViewModel>(response);
-                        textBoxName.Text = stock.StockName;
-                        dataGridView.DataSource = stock.StockComponents;
-                        dataGridView.Columns[0].Visible = false;
-                        dataGridView.Columns[1].Visible = false;
-                        dataGridView.Columns[2].Visible = false;
-                        dataGridView.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
+                    var stock = Task.Run(() => APIClient.GetRequestData<StockViewModel>("api/Stock/Get/" + id.Value)).Result;
+                    textBoxName.Text = stock.StockName;
+                    dataGridView.DataSource = stock.StockComponents;
+                    dataGridView.Columns[0].Visible = false;
+                    dataGridView.Columns[1].Visible = false;
+                    dataGridView.Columns[2].Visible = false;
+                    dataGridView.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -54,44 +49,41 @@ namespace AbstractShopView
                 MessageBox.Show("Заполните название", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            string name = textBoxName.Text;
+            Task task;
+            if (id.HasValue)
             {
-                Task<HttpResponseMessage> response;
-                if (id.HasValue)
+                task = Task.Run(() => APIClient.PostRequestData("api/Stock/UpdElement", new StockBindingModel
                 {
-                    response = APIClient.PostRequest("api/Stock/UpdElement", new StockBindingModel
-                    {
-                        Id = id.Value,
-                        StockName = textBoxName.Text
-                    });
-                }
-                else
-                {
-                    response = APIClient.PostRequest("api/Stock/AddElement", new StockBindingModel
-                    {
-                        StockName = textBoxName.Text
-                    });
-                }
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    Id = id.Value,
+                    StockName = name
+                }));
             }
-            catch (Exception ex)
+            else
             {
+                task = Task.Run(() => APIClient.PostRequestData("api/Stock/AddElement", new StockBindingModel
+                {
+                    StockName = name
+                }));
+            }
+
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
+            {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,7 +11,7 @@ namespace AbstractShopView
         public int Id { set { id = value; } }
 
         private int? id;
-        
+
         public FormClient()
         {
             InitializeComponent();
@@ -24,19 +23,15 @@ namespace AbstractShopView
             {
                 try
                 {
-                    var response = APIClient.GetRequest("api/Client/Get/" + id.Value);
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        var client = APIClient.GetElement<ClientViewModel>(response);
-                        textBoxFIO.Text = client.ClientFIO;
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
+                    var client = Task.Run(() => APIClient.GetRequestData<ClientViewModel>("api/Client/Get/" + id.Value)).Result;
+                    textBoxFIO.Text = client.ClientFIO;
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -49,44 +44,41 @@ namespace AbstractShopView
                 MessageBox.Show("Заполните ФИО", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            string fio = textBoxFIO.Text;
+            Task task;
+            if (id.HasValue)
             {
-                Task<HttpResponseMessage> response;
-                if (id.HasValue)
+                task = Task.Run(() => APIClient.PostRequestData("api/Client/UpdElement", new ClientBindingModel
                 {
-                    response = APIClient.PostRequest("api/Client/UpdElement", new ClientBindingModel
-                    {
-                        Id = id.Value,
-                        ClientFIO = textBoxFIO.Text
-                    });
-                }
-                else
-                {
-                    response = APIClient.PostRequest("api/Client/AddElement", new ClientBindingModel
-                    {
-                        ClientFIO = textBoxFIO.Text
-                    });
-                }
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    Id = id.Value,
+                    ClientFIO = fio
+                }));
             }
-            catch (Exception ex)
+            else
             {
+                task = Task.Run(() => APIClient.PostRequestData("api/Client/AddElement", new ClientBindingModel
+                {
+                    ClientFIO = fio
+                }));
+            }
+
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
+            {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

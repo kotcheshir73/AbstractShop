@@ -2,7 +2,6 @@
 using AbstractShopService.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,22 +26,18 @@ namespace AbstractShopView
             {
                 try
                 {
-                    var response = APIClient.GetRequest("api/Product/Get/" + id.Value);
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        var product = APIClient.GetElement<ProductViewModel>(response);
-                        textBoxName.Text = product.ProductName;
-                        textBoxPrice.Text = product.Price.ToString();
-                        productComponents = product.ProductComponents;
-                        LoadData();
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
+                    var product = Task.Run(() => APIClient.GetRequestData<ProductViewModel>("api/Product/Get/" + id.Value)).Result;
+                    textBoxName.Text = product.ProductName;
+                    textBoxPrice.Text = product.Price.ToString();
+                    productComponents = product.ProductComponents;
+                    LoadData();
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -77,9 +72,9 @@ namespace AbstractShopView
             var form = new FormProductComponent();
             if (form.ShowDialog() == DialogResult.OK)
             {
-                if(form.Model != null)
+                if (form.Model != null)
                 {
-                    if(id.HasValue)
+                    if (id.HasValue)
                     {
                         form.Model.ProductId = id.Value;
                     }
@@ -144,59 +139,57 @@ namespace AbstractShopView
                 MessageBox.Show("Заполните компоненты", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            List<ProductComponentBindingModel> productComponentBM = new List<ProductComponentBindingModel>();
+            for (int i = 0; i < productComponents.Count; ++i)
             {
-                List<ProductComponentBindingModel> productComponentBM = new List<ProductComponentBindingModel>();
-                for (int i = 0; i < productComponents.Count; ++i)
+                productComponentBM.Add(new ProductComponentBindingModel
                 {
-                    productComponentBM.Add(new ProductComponentBindingModel
-                    {
-                        Id = productComponents[i].Id,
-                        ProductId = productComponents[i].ProductId,
-                        ComponentId = productComponents[i].ComponentId,
-                        Count = productComponents[i].Count
-                    });
-                }
-                Task<HttpResponseMessage> response;
-                if (id.HasValue)
-                {
-                    response = APIClient.PostRequest("api/Product/UpdElement", new ProductBindingModel
-                    {
-                        Id = id.Value,
-                        ProductName = textBoxName.Text,
-                        Price = Convert.ToInt32(textBoxPrice.Text),
-                        ProductComponents = productComponentBM
-                    });
-                }
-                else
-                {
-                    response = APIClient.PostRequest("api/Product/AddElement", new ProductBindingModel
-                    {
-                        ProductName = textBoxName.Text,
-                        Price = Convert.ToInt32(textBoxPrice.Text),
-                        ProductComponents = productComponentBM
-                    });
-                }
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    Id = productComponents[i].Id,
+                    ProductId = productComponents[i].ProductId,
+                    ComponentId = productComponents[i].ComponentId,
+                    Count = productComponents[i].Count
+                });
             }
-            catch (Exception ex)
+            string name = textBoxName.Text;
+            int price = Convert.ToInt32(textBoxPrice.Text);
+            Task task;
+            if (id.HasValue)
             {
+                task = Task.Run(() => APIClient.PostRequestData("api/Product/UpdElement", new ProductBindingModel
+                {
+                    Id = id.Value,
+                    ProductName = name,
+                    Price = price,
+                    ProductComponents = productComponentBM
+                }));
+            }
+            else
+            {
+                task = Task.Run(() => APIClient.PostRequestData("api/Product/AddElement", new ProductBindingModel
+                {
+                    ProductName = name,
+                    Price = price,
+                    ProductComponents = productComponentBM
+                }));
+            }
+
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
+            {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
     }
