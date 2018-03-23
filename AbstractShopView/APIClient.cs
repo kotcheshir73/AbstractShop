@@ -24,7 +24,7 @@ namespace AbstractShopView
             return await client.GetAsync(requestUrl);
         }
 
-        public static async Task<HttpResponseMessage> PostRequest<T>(string requestUrl, T model)
+        private static async Task<HttpResponseMessage> PostRequest<T>(string requestUrl, T model)
         {
             return await client.PostAsJsonAsync(requestUrl, model);
         }
@@ -50,7 +50,8 @@ namespace AbstractShopView
             {
                 string error = response.Content.ReadAsStringAsync().Result;
                 var errorMessage = JsonConvert.DeserializeObject<HttpErrorMessage>(error);
-                throw new Exception(errorMessage.Message + " " + (errorMessage.MessageDetail ?? "") + " " + (errorMessage.ExceptionMessage ?? ""));
+                throw new Exception(errorMessage.Message + " " + (errorMessage.MessageDetail ?? "") + 
+                    " " + (errorMessage.ExceptionMessage ?? ""));
             }
         }
 
@@ -65,7 +66,8 @@ namespace AbstractShopView
             {
                 string error = response.Content.ReadAsStringAsync().Result;
                 var errorMessage = JsonConvert.DeserializeObject<HttpErrorMessage>(error);
-                throw new Exception(errorMessage.Message + " " + errorMessage.MessageDetail ?? "" + " " + errorMessage.ExceptionMessage ?? "");
+                throw new Exception(errorMessage.Message + " " + errorMessage.MessageDetail ?? "" + 
+                    " " + errorMessage.ExceptionMessage ?? "");
             }
         }
     }
