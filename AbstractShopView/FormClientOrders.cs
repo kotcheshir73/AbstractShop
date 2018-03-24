@@ -28,12 +28,13 @@ namespace AbstractShopView
                                             "c " + dateTimePickerFrom.Value.ToShortDateString() +
                                             " по " + dateTimePickerTo.Value.ToShortDateString());
                 reportViewer.LocalReport.SetParameters(parameter);
-                
-                var dataSource = Task.Run(() => APIClient.PostRequestData<ReportBindingModel, List<ClientOrdersModel>>("api/Report/GetClientOrders", new ReportBindingModel
-                {
-                    DateFrom = dateTimePickerFrom.Value,
-                    DateTo = dateTimePickerTo.Value
-                })).Result;
+
+                var dataSource = Task.Run(() => APIClient.PostRequestData<ReportBindingModel, List<ClientOrdersModel>>("api/Report/GetClientOrders",
+                    new ReportBindingModel
+                    {
+                        DateFrom = dateTimePickerFrom.Value,
+                        DateTo = dateTimePickerTo.Value
+                    })).Result;
                 ReportDataSource source = new ReportDataSource("DataSetOrders", dataSource);
                 reportViewer.LocalReport.DataSources.Add(source);
 
