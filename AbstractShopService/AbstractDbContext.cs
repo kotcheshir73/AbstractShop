@@ -1,14 +1,12 @@
 ﻿using AbstractShopModel;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 
 namespace AbstractShopService
 {
-    [Table("AbstractDatabase")]
     public class AbstractDbContext : DbContext
     {
-        public AbstractDbContext()
+        public AbstractDbContext() : base("AbstractDatabase")
         {
             //настройки конфигурации для entity
             Configuration.ProxyCreationEnabled = false;
@@ -31,6 +29,8 @@ namespace AbstractShopService
         public virtual DbSet<Stock> Stocks { get; set; }
 
         public virtual DbSet<StockComponent> StockComponents { get; set; }
+
+        public virtual DbSet<MessageInfo> MessageInfos { get; set; }
 
         /// <summary>
         /// Перегружаем метод созранения изменений. Если возникла ошибка - очищаем все изменения

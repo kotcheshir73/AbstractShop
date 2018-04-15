@@ -56,6 +56,7 @@ namespace AbstractShopRestApi
             container.RegisterType<IStockService, StockServiceBD>(new HierarchicalLifetimeManager());
             container.RegisterType<IMainService, MainServiceBD>(new HierarchicalLifetimeManager());
             container.RegisterType<IReportService, ReportServiceBD>(new HierarchicalLifetimeManager());
+            container.RegisterType<IMessageInfoService, MessageInfoServiceBD>(new HierarchicalLifetimeManager());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AbstractShopService.BindingModels;
 using AbstractShopService.ViewModels;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,6 +26,11 @@ namespace AbstractShopView
                 {
                     var client = Task.Run(() => APIClient.GetRequestData<ClientViewModel>("api/Client/Get/" + id.Value)).Result;
                     textBoxFIO.Text = client.ClientFIO;
+                    textBoxMail.Text = client.Mail;
+                    dataGridView.DataSource = client.Messages;
+                    dataGridView.Columns[0].Visible = false;
+                    dataGridView.Columns[1].Visible = false;
+                    dataGridView.Columns[4].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
                 catch (Exception ex)
                 {
@@ -45,20 +51,32 @@ namespace AbstractShopView
                 return;
             }
             string fio = textBoxFIO.Text;
+            string mail = textBoxMail.Text;
+            if (!string.IsNullOrEmpty(mail))
+            {
+                if (!Regex.IsMatch(mail, @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$"))
+                {
+                    MessageBox.Show("Неверный формат для электронной почты", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
             Task task;
             if (id.HasValue)
             {
                 task = Task.Run(() => APIClient.PostRequestData("api/Client/UpdElement", new ClientBindingModel
                 {
                     Id = id.Value,
-                    ClientFIO = fio
+                    ClientFIO = fio,
+                    Mail = mail
                 }));
             }
             else
             {
                 task = Task.Run(() => APIClient.PostRequestData("api/Client/AddElement", new ClientBindingModel
                 {
-                    ClientFIO = fio
+                    ClientFIO = fio,
+                    Mail = mail
                 }));
             }
 

@@ -131,6 +131,7 @@
     <Compile Include="Controllers\ComponentController.cs" />
     <Compile Include="Controllers\ImplementerController.cs" />
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\MessageInfoController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StockController.cs" />
