@@ -1,4 +1,4 @@
-﻿using AbstractShopModel;
+using AbstractShopModel;
 using System;
 using System.Data.Entity;
 
