@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopModel", "Abstra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopServiceDAL", "AbstractShopServiceDAL\AbstractShopServiceDAL.csproj", "{DADBA555-30F7-45F7-8EB9-D2493D2F4955}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopServiceImplementList", "AbstractShopServiceImplementList\AbstractShopServiceImplementList.csproj", "{DABA8D88-736F-4D3F-9ED3-7D9C3692A542}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DADBA555-30F7-45F7-8EB9-D2493D2F4955}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DADBA555-30F7-45F7-8EB9-D2493D2F4955}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DADBA555-30F7-45F7-8EB9-D2493D2F4955}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DABA8D88-736F-4D3F-9ED3-7D9C3692A542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DABA8D88-736F-4D3F-9ED3-7D9C3692A542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DABA8D88-736F-4D3F-9ED3-7D9C3692A542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DABA8D88-736F-4D3F-9ED3-7D9C3692A542}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

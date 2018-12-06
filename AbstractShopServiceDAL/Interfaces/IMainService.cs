@@ -12,8 +12,8 @@ namespace AbstractShopServiceDAL.Interfaces
 
         void TakeOrderInWork(OrderBindingModel model);
 
-        void FinishOrder(int id);
+        void FinishOrder(OrderBindingModel model);
 
-        void PayOrder(int id);
+        void PayOrder(OrderBindingModel model);
     }
 }
