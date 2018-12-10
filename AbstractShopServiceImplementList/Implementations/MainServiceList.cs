@@ -59,40 +59,40 @@ namespace AbstractShopServiceImplementList.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
-            if(source.Orders[index].Status != OrderStatus.Принят)
+            if(element.Status != OrderStatus.Принят)
             {
                 throw new Exception("Заказ не в статусе \"Принят\"");
             }
-            source.Orders[index].DateImplement = DateTime.Now;
-            source.Orders[index].Status = OrderStatus.Выполняется;
+            element.DateImplement = DateTime.Now;
+            element.Status = OrderStatus.Выполняется;
         }
 
         public void FinishOrder(OrderBindingModel model)
         {
-            Order element = source.Orders.FirstOrDefault(rec => rec.Id == id);
+            Order element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
             if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            if (source.Orders[index].Status != OrderStatus.Выполняется)
+            if (element.Status != OrderStatus.Выполняется)
             {
                 throw new Exception("Заказ не в статусе \"Выполняется\"");
             }
-            source.Orders[index].Status = OrderStatus.Готов;
+            element.Status = OrderStatus.Готов;
         }
 
         public void PayOrder(OrderBindingModel model)
         {
-            Order element = source.Orders.FirstOrDefault(rec => rec.Id == id);
+            Order element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
             if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            if (source.Orders[index].Status != OrderStatus.Готов)
+            if (element.Status != OrderStatus.Готов)
             {
                 throw new Exception("Заказ не в статусе \"Готов\"");
             }
-            source.Orders[index].Status = OrderStatus.Оплачен;
+            element.Status = OrderStatus.Оплачен;
         }
     }
 }
