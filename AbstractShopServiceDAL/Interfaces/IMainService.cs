@@ -15,5 +15,7 @@ namespace AbstractShopServiceDAL.Interfaces
         void FinishOrder(OrderBindingModel model);
 
         void PayOrder(OrderBindingModel model);
+
+        void PutComponentOnStock(StockComponentBindingModel model);
     }
 }

@@ -17,6 +17,10 @@ namespace AbstractShopServiceImplementList
 
         public List<ProductComponent> ProductComponents { get; set; }
 
+        public List<Stock> Stocks { get; set; }
+
+        public List<StockComponent> StockComponents { get; set; }
+
         private DataListSingleton()
         {
             Clients = new List<Client>();
@@ -24,6 +28,8 @@ namespace AbstractShopServiceImplementList
             Orders = new List<Order>();
             Products = new List<Product>();
             ProductComponents = new List<ProductComponent>();
+            Stocks = new List<Stock>();
+            StockComponents = new List<StockComponent>();
         }
 
         public static DataListSingleton GetInstance()

@@ -63,6 +63,39 @@ namespace AbstractShopServiceImplementList.ImplementationsList
             {
                 throw new Exception("Заказ не в статусе \"Принят\"");
             }
+            // смотрим по количеству компонентов на складах
+            var productComponents = source.ProductComponents.Where(rec => rec.ProductId == element.ProductId);
+            foreach (var productComponent in productComponents)
+            {
+                int countOnStocks = source.StockComponents
+                                            .Where(rec => rec.ComponentId == productComponent.ComponentId)
+                                            .Sum(rec => rec.Count);
+                if (countOnStocks < productComponent.Count * element.Count)
+                {
+                    var componentName = source.Components.FirstOrDefault(rec => rec.Id == productComponent.ComponentId);
+                    throw new Exception("Не достаточно компонента " + componentName?.ComponentName + " требуется " + (productComponent.Count * element.Count) + ", в наличии " + countOnStocks);
+                }
+            }
+            // списываем
+            foreach (var productComponent in productComponents)
+            {
+                int countOnStocks = productComponent.Count * element.Count;
+                var stockComponents = source.StockComponents.Where(rec => rec.ComponentId == productComponent.ComponentId);
+                foreach (var stockComponent in stockComponents)
+                {
+                    // компонентов на одном слкаде может не хватать
+                    if (stockComponent.Count >= countOnStocks)
+                    {
+                        stockComponent.Count -= countOnStocks;
+                        break;
+                    }
+                    else
+                    {
+                        countOnStocks -= stockComponent.Count;
+                        stockComponent.Count = 0;
+                    }
+                }
+            }
             element.DateImplement = DateTime.Now;
             element.Status = OrderStatus.Выполняется;
         }
@@ -93,6 +126,26 @@ namespace AbstractShopServiceImplementList.ImplementationsList
                 throw new Exception("Заказ не в статусе \"Готов\"");
             }
             element.Status = OrderStatus.Оплачен;
+        }
+
+        public void PutComponentOnStock(StockComponentBindingModel model)
+        {
+            StockComponent element = source.StockComponents.FirstOrDefault(rec => rec.StockId == model.StockId && rec.ComponentId == model.ComponentId);
+            if (element != null)
+            {
+                element.Count += model.Count;
+            }
+            else
+            {
+                int maxId = source.StockComponents.Count > 0 ? source.StockComponents.Max(rec => rec.Id) : 0;
+                source.StockComponents.Add(new StockComponent
+                {
+                    Id = ++maxId,
+                    StockId = model.StockId,
+                    ComponentId = model.ComponentId,
+                    Count = model.Count
+                });
+            }
         }
     }
 }

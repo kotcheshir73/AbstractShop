@@ -28,6 +28,7 @@ namespace AbstractShopView
             currentContainer.RegisterType<IClientService, ClientServiceList>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IComponentService, ComponentServiceList>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IProductService, ProductServiceList>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IStockService, StockServiceList>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IMainService, MainServiceList>(new HierarchicalLifetimeManager());
 
             return currentContainer;
