@@ -93,6 +93,10 @@ namespace AbstractShopServiceImplementList.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
+            if(source.Orders[index].Status != OrderStatus.Принят)
+            {
+                throw new Exception("Заказ не в статусе \"Принят\"");
+            }
             source.Orders[index].DateImplement = DateTime.Now;
             source.Orders[index].Status = OrderStatus.Выполняется;
         }
@@ -112,6 +116,10 @@ namespace AbstractShopServiceImplementList.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
+            if (source.Orders[index].Status != OrderStatus.Выполняется)
+            {
+                throw new Exception("Заказ не в статусе \"Выполняется\"");
+            }
             source.Orders[index].Status = OrderStatus.Готов;
         }
 
@@ -129,6 +137,10 @@ namespace AbstractShopServiceImplementList.ImplementationsList
             if (index == -1)
             {
                 throw new Exception("Элемент не найден");
+            }
+            if (source.Orders[index].Status != OrderStatus.Готов)
+            {
+                throw new Exception("Заказ не в статусе \"Готов\"");
             }
             source.Orders[index].Status = OrderStatus.Оплачен;
         }
