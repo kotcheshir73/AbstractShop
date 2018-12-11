@@ -22,5 +22,9 @@ namespace AbstractShopModel
         public DateTime DateCreate { get; set; }
 
         public DateTime? DateImplement { get; set; }
+
+        public virtual Client Client { get; set; }
+
+        public virtual Product Product { get; set; }
     }
 }

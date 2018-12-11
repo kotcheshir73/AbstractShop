@@ -12,5 +12,9 @@
         public int ComponentId { get; set; }
 
         public int Count { get; set; }
+
+        public virtual Stock Stock { get; set; }
+
+        public virtual Component Component { get; set; }
     }
 }
