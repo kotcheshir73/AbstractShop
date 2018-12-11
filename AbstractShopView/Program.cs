@@ -1,5 +1,5 @@
 ﻿using AbstractShopServiceDAL.Interfaces;
-using AbstractShopServiceImplementList.ImplementationsList;
+using AbstractShopServiceImplementList.Implementations;
 using System;
 using System.Windows.Forms;
 using Unity;

@@ -5,7 +5,7 @@ using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 
-namespace AbstractShopServiceImplementList.ImplementationsList
+namespace AbstractShopServiceImplementList.Implementations
 {
     public class ClientServiceList : IClientService
     {
