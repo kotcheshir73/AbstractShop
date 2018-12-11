@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopServiceImplemen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopView", "AbstractShopView\AbstractShopView.csproj", "{063DDA03-8372-4005-B0BC-A5AE5902AB2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractShopServiceImplementDataBase", "AbstractShopServiceImplementDataBase\AbstractShopServiceImplementDataBase.csproj", "{0FC49CFF-F9EA-4D25-8EF1-27875ABF360E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{063DDA03-8372-4005-B0BC-A5AE5902AB2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{063DDA03-8372-4005-B0BC-A5AE5902AB2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{063DDA03-8372-4005-B0BC-A5AE5902AB2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FC49CFF-F9EA-4D25-8EF1-27875ABF360E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FC49CFF-F9EA-4D25-8EF1-27875ABF360E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FC49CFF-F9EA-4D25-8EF1-27875ABF360E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FC49CFF-F9EA-4D25-8EF1-27875ABF360E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
