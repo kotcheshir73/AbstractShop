@@ -35,7 +35,14 @@
     <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.5.8.12\lib\net46\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.ConfigurationManager, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Configuration.ConfigurationManager.4.4.1\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
@@ -214,6 +221,10 @@
     <ProjectReference Include="..\AbstractShopServiceDAL\AbstractShopServiceDAL.csproj">
       <Project>{dadba555-30f7-45f7-8eb9-d2493d2f4955}</Project>
       <Name>AbstractShopServiceDAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AbstractShopServiceImplementDataBase\AbstractShopServiceImplementDataBase.csproj">
+      <Project>{0fc49cff-f9ea-4d25-8ef1-27875abf360e}</Project>
+      <Name>AbstractShopServiceImplementDataBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\AbstractShopServiceImplementList\AbstractShopServiceImplementList.csproj">
       <Project>{daba8d88-736f-4d3f-9ed3-7d9c3692a542}</Project>

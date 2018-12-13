@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace AbstractShopServiceImplementDataBase.Implementations
 {
-    public class ProductServiceBD : IProductService
+    public class ProductServiceDB : IProductService
     {
         private AbstractDbContext context;
 
-        public ProductServiceBD(AbstractDbContext context)
+        public ProductServiceDB(AbstractDbContext context)
         {
             this.context = context;
         }
