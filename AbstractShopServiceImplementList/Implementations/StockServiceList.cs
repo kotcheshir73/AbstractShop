@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AbstractShopServiceImplementList.ImplementationsList
+namespace AbstractShopServiceImplementList.Implementations
 {
     public class StockServiceList : IStockService
     {

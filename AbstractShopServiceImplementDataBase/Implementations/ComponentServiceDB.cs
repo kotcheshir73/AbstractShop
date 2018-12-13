@@ -19,8 +19,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public List<ComponentViewModel> GetList()
         {
-            List<ComponentViewModel> result = context.Components
-                .Select(rec => new ComponentViewModel
+            List<ComponentViewModel> result = context.Components.Select(rec => new ComponentViewModel
                 {
                     Id = rec.Id,
                     ComponentName = rec.ComponentName
@@ -59,8 +58,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public void UpdElement(ComponentBindingModel model)
         {
-            Component element = context.Components.FirstOrDefault(rec =>
-                                        rec.ComponentName == model.ComponentName && rec.Id != model.Id);
+            Component element = context.Components.FirstOrDefault(rec => rec.ComponentName == model.ComponentName && rec.Id != model.Id);
             if (element != null)
             {
                 throw new Exception("Уже есть компонент с таким названием");

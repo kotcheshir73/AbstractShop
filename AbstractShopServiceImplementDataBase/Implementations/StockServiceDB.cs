@@ -19,8 +19,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public List<StockViewModel> GetList()
         {
-            List<StockViewModel> result = context.Stocks
-                .Select(rec => new StockViewModel
+            List<StockViewModel> result = context.Stocks.Select(rec => new StockViewModel
                 {
                     Id = rec.Id,
                     StockName = rec.StockName,
@@ -81,8 +80,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public void UpdElement(StockBindingModel model)
         {
-            Stock element = context.Stocks.FirstOrDefault(rec =>
-                                        rec.StockName == model.StockName && rec.Id != model.Id);
+            Stock element = context.Stocks.FirstOrDefault(rec => rec.StockName == model.StockName && rec.Id != model.Id);
             if (element != null)
             {
                 throw new Exception("Уже есть склад с таким названием");
@@ -106,8 +104,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     if (element != null)
                     {
                         // при удалении удаляем все записи о компонентах на удаляемом складе
-                        context.StockComponents.RemoveRange(
-                                            context.StockComponents.Where(rec => rec.StockId == id));
+                        context.StockComponents.RemoveRange(context.StockComponents.Where(rec => rec.StockId == id));
                         context.Stocks.Remove(element);
                         context.SaveChanges();
                     }

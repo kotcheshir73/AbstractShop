@@ -21,8 +21,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public List<OrderViewModel> GetList()
         {
-            List<OrderViewModel> result = context.Orders
-                .Select(rec => new OrderViewModel
+            List<OrderViewModel> result = context.Orders.Select(rec => new OrderViewModel
                 {
                     Id = rec.Id,
                     ClientId = rec.ClientId,
@@ -70,15 +69,12 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     {
                         throw new Exception("Элемент не найден");
                     }
-                    var productComponents = context.ProductComponents
-                                                .Include(rec => rec.Component)
-                                                .Where(rec => rec.ProductId == element.ProductId);
+                    var productComponents = context.ProductComponents.Include(rec => rec.Component).Where(rec => rec.ProductId == element.ProductId);
                     // списываем
                     foreach (var productComponent in productComponents)
                     {
                         int countOnStocks = productComponent.Count * element.Count;
-                        var stockComponents = context.StockComponents
-                                                    .Where(rec => rec.ComponentId == productComponent.ComponentId);
+                        var stockComponents = context.StockComponents.Where(rec => rec.ComponentId == productComponent.ComponentId);
                         foreach (var stockComponent in stockComponents)
                         {
                             // компонентов на одном слкаде может не хватать
@@ -98,9 +94,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                         }
                         if (countOnStocks > 0)
                         {
-                            throw new Exception("Не достаточно компонента " +
-                                productComponent.Component.ComponentName + " требуется " +
-                                productComponent.Count + ", не хватает " + countOnStocks);
+                            throw new Exception("Не достаточно компонента " + productComponent.Component.ComponentName + " требуется " + productComponent.Count + ", не хватает " + countOnStocks);
                         }
                     }
                     element.DateImplement = DateTime.Now;
@@ -140,9 +134,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public void PutComponentOnStock(StockComponentBindingModel model)
         {
-            StockComponent element = context.StockComponents
-                                                .FirstOrDefault(rec => rec.StockId == model.StockId &&
-                                                                    rec.ComponentId == model.ComponentId);
+            StockComponent element = context.StockComponents.FirstOrDefault(rec => rec.StockId == model.StockId && rec.ComponentId == model.ComponentId);
             if (element != null)
             {
                 element.Count += model.Count;

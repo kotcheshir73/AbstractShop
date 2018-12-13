@@ -19,8 +19,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public List<ClientViewModel> GetList()
         {
-            List<ClientViewModel> result = context.Clients
-                .Select(rec => new ClientViewModel
+            List<ClientViewModel> result = context.Clients.Select(rec => new ClientViewModel
                 {
                     Id = rec.Id,
                     ClientFIO = rec.ClientFIO
@@ -59,8 +58,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public void UpdElement(ClientBindingModel model)
         {
-            Client element = context.Clients.FirstOrDefault(rec =>
-                                    rec.ClientFIO == model.ClientFIO && rec.Id != model.Id);
+            Client element = context.Clients.FirstOrDefault(rec => rec.ClientFIO == model.ClientFIO && rec.Id != model.Id);
             if (element != null)
             {
                 throw new Exception("Уже есть клиент с таким ФИО");

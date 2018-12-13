@@ -19,8 +19,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public List<ProductViewModel> GetList()
         {
-            List<ProductViewModel> result = context.Products
-                .Select(rec => new ProductViewModel
+            List<ProductViewModel> result = context.Products.Select(rec => new ProductViewModel
                 {
                     Id = rec.Id,
                     ProductName = rec.ProductName,
@@ -120,8 +119,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             {
                 try
                 {
-                    Product element = context.Products.FirstOrDefault(rec =>
-                                        rec.ProductName == model.ProductName && rec.Id != model.Id);
+                    Product element = context.Products.FirstOrDefault(rec => rec.ProductName == model.ProductName && rec.Id != model.Id);
                     if (element != null)
                     {
                         throw new Exception("Уже есть изделие с таким названием");
@@ -137,18 +135,13 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
                     // обновляем существуюущие компоненты
                     var compIds = model.ProductComponents.Select(rec => rec.ComponentId).Distinct();
-                    var updateComponents = context.ProductComponents
-                                                    .Where(rec => rec.ProductId == model.Id &&
-                                                        compIds.Contains(rec.ComponentId));
+                    var updateComponents = context.ProductComponents.Where(rec => rec.ProductId == model.Id && compIds.Contains(rec.ComponentId));
                     foreach (var updateComponent in updateComponents)
                     {
-                        updateComponent.Count = model.ProductComponents
-                                                        .FirstOrDefault(rec => rec.Id == updateComponent.Id).Count;
+                        updateComponent.Count = model.ProductComponents.FirstOrDefault(rec => rec.Id == updateComponent.Id).Count;
                     }
                     context.SaveChanges();
-                    context.ProductComponents.RemoveRange(
-                                        context.ProductComponents.Where(rec => rec.ProductId == model.Id &&
-                                                                            !compIds.Contains(rec.ComponentId)));
+                    context.ProductComponents.RemoveRange(context.ProductComponents.Where(rec => rec.ProductId == model.Id && !compIds.Contains(rec.ComponentId)));
                     context.SaveChanges();
                     // новые записи
                     var groupComponents = model.ProductComponents
@@ -161,9 +154,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                                                 });
                     foreach (var groupComponent in groupComponents)
                     {
-                        ProductComponent elementPC = context.ProductComponents
-                                                .FirstOrDefault(rec => rec.ProductId == model.Id &&
-                                                                rec.ComponentId == groupComponent.ComponentId);
+                        ProductComponent elementPC = context.ProductComponents.FirstOrDefault(rec => rec.ProductId == model.Id && rec.ComponentId == groupComponent.ComponentId);
                         if (elementPC != null)
                         {
                             elementPC.Count += groupComponent.Count;
@@ -200,8 +191,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     if (element != null)
                     {
                         // удаяем записи по компонентам при удалении изделия
-                        context.ProductComponents.RemoveRange(
-                                            context.ProductComponents.Where(rec => rec.ProductId == id));
+                        context.ProductComponents.RemoveRange(context.ProductComponents.Where(rec => rec.ProductId == id));
                         context.Products.Remove(element);
                         context.SaveChanges();
                     }
