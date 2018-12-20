@@ -1,28 +1,19 @@
 ﻿using AbstractShopServiceDAL.BindingModels;
-using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormClient : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IClientService service;
 
         private int? id;
 
-        public FormClient(IClientService service)
+        public FormClient()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormClient_Load(object sender, EventArgs e)
@@ -31,11 +22,8 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ClientViewModel view = service.GetElement(id.Value);
-                    if (view != null)
-                    {
-                        textBoxFIO.Text = view.ClientFIO;
-                    }
+                    ClientViewModel client = APIClient.GetRequest<ClientViewModel>("api/Client/Get/" + id.Value);
+                    textBoxFIO.Text = client.ClientFIO;
                 }
                 catch (Exception ex)
                 {
@@ -46,7 +34,7 @@ namespace AbstractShopView
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(textBoxFIO.Text))
+            if (string.IsNullOrEmpty(textBoxFIO.Text))
             {
                 MessageBox.Show("Заполните ФИО", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -55,7 +43,7 @@ namespace AbstractShopView
             {
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ClientBindingModel
+                    APIClient.PostRequest<ClientBindingModel, bool>("api/Client/UpdElement", new ClientBindingModel
                     {
                         Id = id.Value,
                         ClientFIO = textBoxFIO.Text
@@ -63,11 +51,12 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    service.AddElement(new ClientBindingModel
+                    APIClient.PostRequest<ClientBindingModel, bool>("api/Client/AddElement", new ClientBindingModel
                     {
                         ClientFIO = textBoxFIO.Text
                     });
                 }
+
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DialogResult = DialogResult.OK;
                 Close();

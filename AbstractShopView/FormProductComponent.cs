@@ -1,40 +1,31 @@
-﻿using AbstractShopServiceDAL.Interfaces;
-using AbstractShopServiceDAL.ViewModels;
+﻿using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProductComponent : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public ProductComponentViewModel Model { set { model = value; }  get { return model; } }
-
-        private readonly IComponentService service;
 
         private ProductComponentViewModel model;
 
-        public FormProductComponent(IComponentService service)
+        public FormProductComponent()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProductComponent_Load(object sender, EventArgs e)
         {
             try
             {
-                List<ComponentViewModel> list = service.GetList();
-                if (list != null)
+                List<ComponentViewModel> listC = APIClient.GetRequest<List<ComponentViewModel>>("api/Component/GetList");
+                if (listC != null)
                 {
                     comboBoxComponent.DisplayMember = "ComponentName";
                     comboBoxComponent.ValueMember = "Id";
-                    comboBoxComponent.DataSource = list;
+                    comboBoxComponent.DataSource = listC;
                     comboBoxComponent.SelectedItem = null;
                 }
             }

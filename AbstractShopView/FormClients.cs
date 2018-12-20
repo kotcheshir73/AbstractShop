@@ -1,24 +1,16 @@
-﻿using AbstractShopServiceDAL.Interfaces;
+﻿using AbstractShopServiceDAL.BindingModels;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormClients : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IClientService service;
-
-        public FormClients(IClientService service)
+        public FormClients()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormClients_Load(object sender, EventArgs e)
@@ -30,7 +22,7 @@ namespace AbstractShopView
         {
             try
             {
-                List<ClientViewModel> list = service.GetList();
+                List<ClientViewModel> list = APIClient.GetRequest<List<ClientViewModel>>("api/Client/GetList");
                 if (list != null)
                 {
                     dataGridView.DataSource = list;
@@ -46,8 +38,8 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormClient>();
-            if(form.ShowDialog() == DialogResult.OK)
+            var form = new FormClient();
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
             }
@@ -55,10 +47,12 @@ namespace AbstractShopView
 
         private void buttonUpd_Click(object sender, EventArgs e)
         {
-            if(dataGridView.SelectedRows.Count == 1)
+            if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormClient>();
-                form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                var form = new FormClient
+                {
+                    Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value)
+                };
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     LoadData();
@@ -70,12 +64,12 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                if(MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        APIClient.PostRequest<ClientBindingModel, bool>("api/Client/DelElement", new ClientBindingModel { Id = id });
                     }
                     catch (Exception ex)
                     {

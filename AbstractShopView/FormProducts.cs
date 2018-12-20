@@ -1,24 +1,16 @@
-﻿using AbstractShopServiceDAL.Interfaces;
+﻿using AbstractShopServiceDAL.BindingModels;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProducts : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IProductService service;
-
-        public FormProducts(IProductService service)
+        public FormProducts()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProducts_Load(object sender, EventArgs e)
@@ -30,7 +22,7 @@ namespace AbstractShopView
         {
             try
             {
-                List<ProductViewModel> list = service.GetList();
+                List<ProductViewModel> list = APIClient.GetRequest<List<ProductViewModel>>("api/Product/GetList");
                 if (list != null)
                 {
                     dataGridView.DataSource = list;
@@ -46,7 +38,7 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormProduct>();
+            var form = new FormProduct();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
@@ -57,8 +49,10 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormProduct>();
-                form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                var form = new FormProduct
+                {
+                    Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value)
+                };
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     LoadData();
@@ -75,7 +69,7 @@ namespace AbstractShopView
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        APIClient.PostRequest<ClientBindingModel, bool>("api/Product/DelElement", new ClientBindingModel { Id = id });
                     }
                     catch (Exception ex)
                     {

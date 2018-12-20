@@ -1,28 +1,19 @@
 ﻿using AbstractShopServiceDAL.BindingModels;
-using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormComponent : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IComponentService service;
 
         private int? id;
 
-        public FormComponent(IComponentService service)
+        public FormComponent()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormComponent_Load(object sender, EventArgs e)
@@ -31,11 +22,8 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ComponentViewModel view = service.GetElement(id.Value);
-                    if (view != null)
-                    {
-                        textBoxName.Text = view.ComponentName;
-                    }
+                    ComponentViewModel component = APIClient.GetRequest<ComponentViewModel>("api/Component/Get/" + id.Value);
+                    textBoxName.Text = component.ComponentName;
                 }
                 catch (Exception ex)
                 {
@@ -55,7 +43,7 @@ namespace AbstractShopView
             {
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ComponentBindingModel
+                    APIClient.PostRequest<ComponentBindingModel, bool>("api/Component/UpdElement", new ComponentBindingModel
                     {
                         Id = id.Value,
                         ComponentName = textBoxName.Text
@@ -63,7 +51,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    service.AddElement(new ComponentBindingModel
+                    APIClient.PostRequest<ComponentBindingModel, bool>("api/Component/AddElement", new ComponentBindingModel
                     {
                         ComponentName = textBoxName.Text
                     });

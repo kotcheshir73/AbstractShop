@@ -1,38 +1,23 @@
 ﻿using AbstractShopServiceDAL.BindingModels;
-using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormPutOnStock : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IStockService serviceS;
-
-        private readonly IComponentService serviceC;
-
-        private readonly IMainService serviceM;
-
-        public FormPutOnStock(IStockService serviceS, IComponentService serviceC, IMainService serviceM)
+        public FormPutOnStock()
         {
             InitializeComponent();
-            this.serviceS = serviceS;
-            this.serviceC = serviceC;
-            this.serviceM = serviceM;
         }
 
         private void FormPutOnStock_Load(object sender, EventArgs e)
         {
             try
             {
-                List<ComponentViewModel> listC = serviceC.GetList();
+                List<ComponentViewModel> listC = APIClient.GetRequest<List<ComponentViewModel>>("api/Component/GetList");
                 if (listC != null)
                 {
                     comboBoxComponent.DisplayMember = "ComponentName";
@@ -40,7 +25,8 @@ namespace AbstractShopView
                     comboBoxComponent.DataSource = listC;
                     comboBoxComponent.SelectedItem = null;
                 }
-                List<StockViewModel> listS = serviceS.GetList();
+
+                List<StockViewModel> listS = APIClient.GetRequest<List<StockViewModel>>("api/Stock/GetList");
                 if (listS != null)
                 {
                     comboBoxStock.DisplayMember = "StockName";
@@ -74,7 +60,7 @@ namespace AbstractShopView
             }
             try
             {
-                serviceM.PutComponentOnStock(new StockComponentBindingModel
+                APIClient.PostRequest<StockComponentBindingModel, bool>("api/Main/PutComponentOnStock", new StockComponentBindingModel
                 {
                     ComponentId = Convert.ToInt32(comboBoxComponent.SelectedValue),
                     StockId = Convert.ToInt32(comboBoxStock.SelectedValue),

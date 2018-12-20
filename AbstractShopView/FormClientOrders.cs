@@ -1,24 +1,17 @@
 ﻿using AbstractShopServiceDAL.BindingModel;
-using AbstractShopServiceDAL.Interfaces;
+using AbstractShopServiceDAL.ViewModel;
 using Microsoft.Reporting.WinForms;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormClientOrders : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IReportService service;
-
-        public FormClientOrders(IReportService service)
+        public FormClientOrders()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void buttonMake_Click(object sender, EventArgs e)
@@ -35,12 +28,13 @@ namespace AbstractShopView
                                             " по " + dateTimePickerTo.Value.ToShortDateString());
                 reportViewer.LocalReport.SetParameters(parameter);
 
-                var dataSource = service.GetClientOrders(new ReportBindingModel
+                List<ClientOrdersModel> response = APIClient.PostRequest<ReportBindingModel, List<ClientOrdersModel>>("api/Report/GetClientOrders", new ReportBindingModel
                 {
                     DateFrom = dateTimePickerFrom.Value,
                     DateTo = dateTimePickerTo.Value
                 });
-                ReportDataSource source = new ReportDataSource("DataSetOrders", dataSource);
+
+                ReportDataSource source = new ReportDataSource("DataSetOrders", response);
                 reportViewer.LocalReport.DataSources.Add(source);
 
                 reportViewer.RefreshReport();
@@ -66,7 +60,7 @@ namespace AbstractShopView
             {
                 try
                 {
-                    service.SaveClientOrders(new ReportBindingModel
+                    APIClient.PostRequest<ReportBindingModel, bool>("api/Report/SaveClientOrders", new ReportBindingModel
                     {
                         FileName = sfd.FileName,
                         DateFrom = dateTimePickerFrom.Value,

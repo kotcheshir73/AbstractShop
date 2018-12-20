@@ -1,11 +1,5 @@
-﻿using AbstractShopServiceDAL.Interfaces;
-using AbstractShopServiceImplementDataBase;
-using AbstractShopServiceImplementDataBase.Implementations;
-using System;
-using System.Data.Entity;
+﻿using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Lifetime;
 
 namespace AbstractShopView
 {
@@ -17,25 +11,10 @@ namespace AbstractShopView
         [STAThread]
         static void Main()
         {
-            var container = BuildUnityContainer();
-
+            APIClient.Connect();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(container.Resolve<FormMain>());
-        }
-
-        public static IUnityContainer BuildUnityContainer()
-        {
-            var currentContainer = new UnityContainer();
-            currentContainer.RegisterType<DbContext, AbstractDbContext>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IClientService, ClientServiceDB>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IComponentService, ComponentServiceDB>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IProductService, ProductServiceDB>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IStockService, StockServiceDB>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IMainService, MainServiceDB>(new HierarchicalLifetimeManager());
-
-            currentContainer.RegisterType<IReportService, ReportServiceDB>(new HierarchicalLifetimeManager());
-            return currentContainer;
+            Application.Run(new FormMain());
         }
     }
 }

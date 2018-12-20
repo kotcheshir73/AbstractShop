@@ -1,30 +1,23 @@
 ﻿using AbstractShopServiceDAL.BindingModel;
-using AbstractShopServiceDAL.Interfaces;
+using AbstractShopServiceDAL.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormStocksLoad : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IReportService service;
-
-        public FormStocksLoad(IReportService service)
+        public FormStocksLoad()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormStocksLoad_Load(object sender, EventArgs e)
         {
             try
             {
-                var dict = service.GetStocksLoad();
+                List<StocksLoadViewModel> dict = APIClient.GetRequest<List<StocksLoadViewModel>>("api/Report/GetStocksLoad");
                 if (dict != null)
                 {
                     dataGridView.Rows.Clear();
@@ -56,7 +49,7 @@ namespace AbstractShopView
             {
                 try
                 {
-                    service.SaveStocksLoad(new ReportBindingModel
+                    APIClient.PostRequest<ReportBindingModel, bool>("api/Report/SaveStocksLoad", new ReportBindingModel
                     {
                         FileName = sfd.FileName
                     });

@@ -1,31 +1,22 @@
 ﻿using AbstractShopServiceDAL.BindingModels;
-using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormProduct : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IProductService service;
 
         private int? id;
 
         private List<ProductComponentViewModel> productComponents;
 
-        public FormProduct(IProductService service)
+        public FormProduct()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormProduct_Load(object sender, EventArgs e)
@@ -34,14 +25,11 @@ namespace AbstractShopView
             {
                 try
                 {
-                    ProductViewModel view = service.GetElement(id.Value);
-                    if (view != null)
-                    {
-                        textBoxName.Text = view.ProductName;
-                        textBoxPrice.Text = view.Price.ToString();
-                        productComponents = view.ProductComponents;
-                        LoadData();
-                    }
+                    ProductViewModel product = APIClient.GetRequest<ProductViewModel>("api/Product/Get/" + id.Value);
+                    textBoxName.Text = product.ProductName;
+                    textBoxPrice.Text = product.Price.ToString();
+                    productComponents = product.ProductComponents;
+                    LoadData();
                 }
                 catch (Exception ex)
                 {
@@ -76,7 +64,7 @@ namespace AbstractShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormProductComponent>();
+            var form = new FormProductComponent();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 if(form.Model != null)
@@ -95,8 +83,10 @@ namespace AbstractShopView
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormProductComponent>();
-                form.Model = productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex];
+                var form = new FormProductComponent
+                {
+                    Model = productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex]
+                };
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex] = form.Model;
@@ -161,7 +151,7 @@ namespace AbstractShopView
                 }
                 if (id.HasValue)
                 {
-                    service.UpdElement(new ProductBindingModel
+                    APIClient.PostRequest<ProductBindingModel, bool>("api/Product/UpdElement", new ProductBindingModel
                     {
                         Id = id.Value,
                         ProductName = textBoxName.Text,
@@ -171,7 +161,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    service.AddElement(new ProductBindingModel
+                    APIClient.PostRequest<ProductBindingModel, bool>("api/Product/AddElement", new ProductBindingModel
                     {
                         ProductName = textBoxName.Text,
                         Price = Convert.ToInt32(textBoxPrice.Text),

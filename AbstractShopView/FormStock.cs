@@ -1,28 +1,19 @@
 ﻿using AbstractShopServiceDAL.BindingModels;
-using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace AbstractShopView
 {
     public partial class FormStock : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IStockService service;
 
         private int? id;
 
-        public FormStock(IStockService service)
+        public FormStock()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormStock_Load(object sender, EventArgs e)
@@ -31,7 +22,7 @@ namespace AbstractShopView
             {
                 try
                 {
-                    StockViewModel view = service.GetElement(id.Value);
+                    StockViewModel view = APIClient.GetRequest<StockViewModel>("api/Stock/Get/" + id.Value);
                     if (view != null)
                     {
                         textBoxName.Text = view.StockName;
@@ -60,7 +51,7 @@ namespace AbstractShopView
             {
                 if (id.HasValue)
                 {
-                    service.UpdElement(new StockBindingModel
+                    APIClient.PostRequest<StockBindingModel, bool>("api/Stock/UpdElement", new StockBindingModel
                     {
                         Id = id.Value,
                         StockName = textBoxName.Text
@@ -68,7 +59,7 @@ namespace AbstractShopView
                 }
                 else
                 {
-                    service.AddElement(new StockBindingModel
+                    APIClient.PostRequest<StockBindingModel, bool>("api/Stock/AddElement", new StockBindingModel
                     {
                         StockName = textBoxName.Text
                     });
