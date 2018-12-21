@@ -13,6 +13,8 @@ namespace AbstractShopModel
 
         public int ProductId { get; set; }
 
+        public int? ImplementerId { get; set; }
+
         public int Count { get; set; }
 
         public decimal Sum { get; set; }
@@ -26,5 +28,7 @@ namespace AbstractShopModel
         public virtual Client Client { get; set; }
 
         public virtual Product Product { get; set; }
+
+        public virtual Implementer Implementer { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     Id = rec.Id,
                     ClientId = rec.ClientId,
                     ProductId = rec.ProductId,
+                    ImplementerId = rec.ImplementerId,
                     DateCreate = SqlFunctions.DateName("dd", rec.DateCreate) + " " +
                                 SqlFunctions.DateName("mm", rec.DateCreate) + " " + 
                                 SqlFunctions.DateName("yyyy", rec.DateCreate),
@@ -37,7 +38,8 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     Count = rec.Count,
                     Sum = rec.Sum,
                     ClientFIO = rec.Client.ClientFIO,
-                    ProductName = rec.Product.ProductName
+                    ProductName = rec.Product.ProductName,
+                    ImplementerName = rec.Implementer.ImplementerFIO
                 })
                 .ToList();
             return result;
@@ -97,6 +99,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                             throw new Exception("Не достаточно компонента " + productComponent.Component.ComponentName + " требуется " + productComponent.Count + ", не хватает " + countOnStocks);
                         }
                     }
+                    element.ImplementerId = model.ImplementerId;
                     element.DateImplement = DateTime.Now;
                     element.Status = OrderStatus.Выполняется;
                     context.SaveChanges();

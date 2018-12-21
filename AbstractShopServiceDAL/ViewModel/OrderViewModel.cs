@@ -21,6 +21,12 @@ namespace AbstractShopServiceDAL.ViewModels
         public string ProductName { get; set; }
 
         [DataMember]
+        public int? ImplementerId { get; set; }
+
+        [DataMember]
+        public string ImplementerName { get; set; }
+
+        [DataMember]
         public int Count { get; set; }
 
         [DataMember]

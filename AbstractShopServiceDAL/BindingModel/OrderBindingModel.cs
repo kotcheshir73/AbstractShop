@@ -15,6 +15,9 @@ namespace AbstractShopServiceDAL.BindingModels
         public int ProductId { get; set; }
 
         [DataMember]
+        public int? ImplementerId { get; set; }
+
+        [DataMember]
         public int Count { get; set; }
 
         [DataMember]

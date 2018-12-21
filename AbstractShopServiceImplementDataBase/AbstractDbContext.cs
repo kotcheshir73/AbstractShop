@@ -17,6 +17,8 @@ namespace AbstractShopServiceImplementDataBase
 
         public virtual DbSet<Component> Components { get; set; }
 
+        public virtual DbSet<Implementer> Implementers { get; set; }
+
         public virtual DbSet<Order> Orders { get; set; }
 
         public virtual DbSet<Product> Products { get; set; }

@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Component.cs" />
+    <Compile Include="Implementer.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="OrderStatus.cs" />
     <Compile Include="Product.cs" />

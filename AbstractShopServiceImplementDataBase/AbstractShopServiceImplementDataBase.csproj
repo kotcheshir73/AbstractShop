@@ -63,6 +63,7 @@
     <Compile Include="AbstractDbContext.cs" />
     <Compile Include="Implementations\ClientServiceDB.cs" />
     <Compile Include="Implementations\ComponentServiceDB.cs" />
+    <Compile Include="Implementations\ImplementerServiceDB.cs" />
     <Compile Include="Implementations\MainServiceDB.cs" />
     <Compile Include="Implementations\ProductServiceDB.cs" />
     <Compile Include="Implementations\ReportServiceDB.cs" />

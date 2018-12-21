@@ -49,6 +49,7 @@ namespace AbstractShopRestApi
             container.RegisterType<DbContext, AbstractDbContext>(new HierarchicalLifetimeManager());
             container.RegisterType<IClientService, ClientServiceDB>(new HierarchicalLifetimeManager());
             container.RegisterType<IComponentService, ComponentServiceDB>(new HierarchicalLifetimeManager());
+            container.RegisterType<IImplementerService, ImplementerServiceDB>(new HierarchicalLifetimeManager());
             container.RegisterType<IProductService, ProductServiceDB>(new HierarchicalLifetimeManager());
             container.RegisterType<IStockService, StockServiceDB>(new HierarchicalLifetimeManager());
             container.RegisterType<IMainService, MainServiceDB>(new HierarchicalLifetimeManager());
