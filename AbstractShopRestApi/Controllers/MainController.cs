@@ -1,6 +1,9 @@
-﻿using AbstractShopServiceDAL.BindingModels;
+﻿using AbstractShopRestApi.Services;
+using AbstractShopServiceDAL.BindingModels;
 using AbstractShopServiceDAL.Interfaces;
+using AbstractShopServiceDAL.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace AbstractShopRestApi.Controllers
@@ -9,9 +12,12 @@ namespace AbstractShopRestApi.Controllers
     {
         private readonly IMainService _service;
 
-        public MainController(IMainService service)
+        private readonly IImplementerService _serviceImplementer;
+
+        public MainController(IMainService service, IImplementerService serviceImplementer)
         {
             _service = service;
+            _serviceImplementer = serviceImplementer;
         }
 
         [HttpGet]
@@ -32,18 +38,6 @@ namespace AbstractShopRestApi.Controllers
         }
 
         [HttpPost]
-        public void TakeOrderInWork(OrderBindingModel model)
-        {
-            _service.TakeOrderInWork(model);
-        }
-
-        [HttpPost]
-        public void FinishOrder(OrderBindingModel model)
-        {
-            _service.FinishOrder(model);
-        }
-
-        [HttpPost]
         public void PayOrder(OrderBindingModel model)
         {
             _service.PayOrder(model);
@@ -53,6 +47,21 @@ namespace AbstractShopRestApi.Controllers
         public void PutComponentOnStock(StockComponentBindingModel model)
         {
             _service.PutComponentOnStock(model);
+        }
+
+        [HttpPost]
+        public void StartWork()
+        {
+            List<OrderViewModel> orders = _service.GetFreeOrders();
+            foreach (var order in orders)
+            {
+                ImplementerViewModel impl = _serviceImplementer.GetFreeWorker();
+                if(impl == null)
+                {
+                    throw new Exception("Нет сотрудников");
+                }
+                new WorkImplementer(_service, _serviceImplementer, impl.Id, order.Id);
+            }
         }
     }
 }

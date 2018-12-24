@@ -72,6 +72,10 @@
     <Compile Include="Migrations\201812111829077_FirstMigration.Designer.cs">
       <DependentUpon>201812111829077_FirstMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201812241548018_AddImplementer.cs" />
+    <Compile Include="Migrations\201812241548018_AddImplementer.Designer.cs">
+      <DependentUpon>201812241548018_AddImplementer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -100,6 +104,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201812111829077_FirstMigration.resx">
       <DependentUpon>201812111829077_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812241548018_AddImplementer.resx">
+      <DependentUpon>201812241548018_AddImplementer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

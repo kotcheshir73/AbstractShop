@@ -147,5 +147,10 @@ namespace AbstractShopServiceImplementList.Implementations
                 });
             }
         }
+
+        public List<OrderViewModel> GetFreeOrders()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

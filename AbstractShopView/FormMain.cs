@@ -126,7 +126,7 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    APIClient.PostRequest<OrderBindingModel, bool>("api/Main/.PayOrder", new OrderBindingModel
+                    APIClient.PostRequest<OrderBindingModel, bool>("api/Main/PayOrder", new OrderBindingModel
                     {
                         Id = id
                     });
@@ -177,6 +177,19 @@ namespace AbstractShopView
         {
             var form = new FormClientOrders();
             form.ShowDialog();
+        }
+
+        private void запускРаботToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                APIClient.PostRequest<int?, bool>("api/Main/StartWork", null);
+                MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

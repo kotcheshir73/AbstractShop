@@ -8,6 +8,8 @@ namespace AbstractShopServiceDAL.Interfaces
     {
         List<OrderViewModel> GetList();
 
+        List<OrderViewModel> GetFreeOrders();
+
         void CreateOrder(OrderBindingModel model);
 
         void TakeOrderInWork(OrderBindingModel model);

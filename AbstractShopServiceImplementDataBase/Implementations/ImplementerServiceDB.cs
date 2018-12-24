@@ -4,6 +4,7 @@ using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 
 namespace AbstractShopServiceImplementDataBase.Implementations
@@ -86,6 +87,23 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             {
                 throw new Exception("Элемент не найден");
             }
+        }
+
+        public ImplementerViewModel GetFreeWorker()
+        {
+            var ordersWorker = context.Implementers
+                .Select(x => new
+                {
+                    ImplId = x.Id,
+                    Count = context.Orders.Where(o => o.Status == OrderStatus.Выполняется && o.ImplementerId == x.Id).Count()
+                })
+                .OrderBy(x => x.Count)
+                .FirstOrDefault();
+            if(ordersWorker != null)
+            {
+                return GetElement(ordersWorker.ImplId);
+            }
+            return null;
         }
     }
 }

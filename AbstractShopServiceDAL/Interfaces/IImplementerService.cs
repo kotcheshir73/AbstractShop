@@ -15,5 +15,7 @@ namespace AbstractShopServiceDAL.Interfaces
         void UpdElement(ImplementerBindingModel model);
 
         void DelElement(int id);
+
+        ImplementerViewModel GetFreeWorker();
     }
 }

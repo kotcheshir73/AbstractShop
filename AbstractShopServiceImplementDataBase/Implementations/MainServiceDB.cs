@@ -45,6 +45,18 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             return result;
         }
 
+        public List<OrderViewModel> GetFreeOrders()
+        {
+            List<OrderViewModel> result = context.Orders
+                .Where(x => x.Status == OrderStatus.Принят)
+                .Select(rec => new OrderViewModel
+            {
+                Id = rec.Id
+            })
+                .ToList();
+            return result;
+        }
+
         public void CreateOrder(OrderBindingModel model)
         {
             context.Orders.Add(new Order
