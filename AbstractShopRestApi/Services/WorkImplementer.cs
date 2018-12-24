@@ -15,7 +15,7 @@ namespace AbstractShopRestApi.Services
 
         private readonly int _orderId;
         // семафор
-        static Semaphore _sem = new Semaphore(3, 5);
+        static Semaphore _sem = new Semaphore(3, 3);
 
         Thread myThread;
 
@@ -25,14 +25,6 @@ namespace AbstractShopRestApi.Services
             _serviceImplementer = serviceImplementer;
             _implementerId = implementerId;
             _orderId = orderId;
-            myThread = new Thread(Work);
-            myThread.Start();
-        }
-
-        public void Work()
-        {
-            // забиваем мастерскую
-            _sem.WaitOne();
             try
             {
                 _service.TakeOrderInWork(new OrderBindingModel
@@ -40,17 +32,31 @@ namespace AbstractShopRestApi.Services
                     Id = _orderId,
                     ImplementerId = _implementerId
                 });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            myThread = new Thread(Work);
+            myThread.Start();
+        }
+
+        public void Work()
+        {
+            try
+            {
+                // забиваем мастерскую
+                _sem.WaitOne();
                 // Типа выполняем
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
                 _service.FinishOrder(new OrderBindingModel
                 {
                     Id = _orderId
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // делаем проброс
-                throw;
+                Console.WriteLine(ex.Message);
             }
             finally
             {

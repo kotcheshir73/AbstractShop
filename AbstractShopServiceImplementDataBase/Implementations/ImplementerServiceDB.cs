@@ -4,7 +4,6 @@ using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.SqlServer;
 using System.Linq;
 
 namespace AbstractShopServiceImplementDataBase.Implementations

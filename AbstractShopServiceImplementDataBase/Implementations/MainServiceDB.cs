@@ -48,7 +48,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
         public List<OrderViewModel> GetFreeOrders()
         {
             List<OrderViewModel> result = context.Orders
-                .Where(x => x.Status == OrderStatus.Принят)
+                .Where(x => x.Status == OrderStatus.Принят || x.Status == OrderStatus.НедостаточноРесурсов)
                 .Select(rec => new OrderViewModel
             {
                 Id = rec.Id
@@ -75,15 +75,14 @@ namespace AbstractShopServiceImplementDataBase.Implementations
         {
             using (var transaction = context.Database.BeginTransaction())
             {
+                Order element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
                 try
                 {
-
-                    Order element = context.Orders.FirstOrDefault(rec => rec.Id == model.Id);
                     if (element == null)
                     {
                         throw new Exception("Элемент не найден");
                     }
-                    if (element.Status != OrderStatus.Принят)
+                    if (element.Status != OrderStatus.Принят && element.Status != OrderStatus.НедостаточноРесурсов)
                     {
                         throw new Exception("Заказ не в статусе \"Принят\"");
                     }
@@ -124,6 +123,9 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                 catch (Exception)
                 {
                     transaction.Rollback();
+                    element.Status = OrderStatus.НедостаточноРесурсов;
+                    context.SaveChanges();
+                    transaction.Commit();
                     throw;
                 }
             }
