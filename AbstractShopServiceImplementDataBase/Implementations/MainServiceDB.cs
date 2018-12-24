@@ -83,6 +83,10 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     {
                         throw new Exception("Элемент не найден");
                     }
+                    if (element.Status != OrderStatus.Принят)
+                    {
+                        throw new Exception("Заказ не в статусе \"Принят\"");
+                    }
                     var productComponents = context.ProductComponents.Include(rec => rec.Component).Where(rec => rec.ProductId == element.ProductId);
                     // списываем
                     foreach (var productComponent in productComponents)
@@ -132,6 +136,10 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             {
                 throw new Exception("Элемент не найден");
             }
+            if (element.Status != OrderStatus.Выполняется)
+            {
+                throw new Exception("Заказ не в статусе \"Выполняется\"");
+            }
             element.Status = OrderStatus.Готов;
             context.SaveChanges();
         }
@@ -142,6 +150,10 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             if (element == null)
             {
                 throw new Exception("Элемент не найден");
+            }
+            if (element.Status != OrderStatus.Готов)
+            {
+                throw new Exception("Заказ не в статусе \"Готов\"");
             }
             element.Status = OrderStatus.Оплачен;
             context.SaveChanges();
