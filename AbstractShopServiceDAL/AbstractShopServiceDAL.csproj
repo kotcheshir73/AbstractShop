@@ -44,6 +44,7 @@
     <Compile Include="BindingModel\ClientBindingModel.cs" />
     <Compile Include="BindingModel\ComponentBindingModel.cs" />
     <Compile Include="BindingModel\ImplementerBindingModel.cs" />
+    <Compile Include="BindingModel\MessageInfoBindingModel.cs" />
     <Compile Include="BindingModel\OrderBindingModel.cs" />
     <Compile Include="BindingModel\ProductBindingModel.cs" />
     <Compile Include="BindingModel\ProductComponentBindingModel.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Interfaces\IComponentService.cs" />
     <Compile Include="Interfaces\IImplementerService.cs" />
     <Compile Include="Interfaces\IMainService.cs" />
+    <Compile Include="Interfaces\IMessageInfoService.cs" />
     <Compile Include="Interfaces\IProductService.cs" />
     <Compile Include="Interfaces\IReportService.cs" />
     <Compile Include="Interfaces\IStockService.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="ViewModel\ClientViewModel.cs" />
     <Compile Include="ViewModel\ComponentViewModel.cs" />
     <Compile Include="ViewModel\ImplementerViewModel.cs" />
+    <Compile Include="ViewModel\MessageInfoViewModel.cs" />
     <Compile Include="ViewModel\OrderViewModel.cs" />
     <Compile Include="ViewModel\ProductComponentViewModel.cs" />
     <Compile Include="ViewModel\ProductViewModel.cs" />

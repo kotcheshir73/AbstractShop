@@ -4,9 +4,12 @@ using AbstractShopServiceDAL.Interfaces;
 using AbstractShopServiceDAL.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 
 namespace AbstractShopServiceImplementDataBase.Implementations
 {
@@ -59,7 +62,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
 
         public void CreateOrder(OrderBindingModel model)
         {
-            context.Orders.Add(new Order
+            var order = new Order
             {
                 ClientId = model.ClientId,
                 ProductId = model.ProductId,
@@ -67,8 +70,12 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                 Count = model.Count,
                 Sum = model.Sum,
                 Status = OrderStatus.Принят
-            });
+            };
+            context.Orders.Add(order);
             context.SaveChanges();
+
+            var client = context.Clients.FirstOrDefault(x => x.Id == model.ClientId);
+            SendEmail(client.Mail, "Оповещение по заказам", string.Format("Заказ №{0} от {1} создан успешно", order.Id, order.DateCreate.ToShortDateString()));
         }
 
         public void TakeOrderInWork(OrderBindingModel model)
@@ -118,6 +125,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                     element.DateImplement = DateTime.Now;
                     element.Status = OrderStatus.Выполняется;
                     context.SaveChanges();
+                    SendEmail(element.Client.Mail, "Оповещение по заказам", string.Format("Заказ №{0} от {1} передеан в работу", element.Id, element.DateCreate.ToShortDateString()));
                     transaction.Commit();
                 }
                 catch (Exception)
@@ -144,6 +152,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             }
             element.Status = OrderStatus.Готов;
             context.SaveChanges();
+            SendEmail(element.Client.Mail, "Оповещение по заказам", string.Format("Заказ №{0} от {1} передан на оплату", element.Id, element.DateCreate.ToShortDateString()));
         }
 
         public void PayOrder(OrderBindingModel model)
@@ -159,6 +168,7 @@ namespace AbstractShopServiceImplementDataBase.Implementations
             }
             element.Status = OrderStatus.Оплачен;
             context.SaveChanges();
+            SendEmail(element.Client.Mail, "Оповещение по заказам", string.Format("Заказ №{0} от {1} оплачен успешно", element.Id, element.DateCreate.ToShortDateString()));
         }
 
         public void PutComponentOnStock(StockComponentBindingModel model)
@@ -178,6 +188,39 @@ namespace AbstractShopServiceImplementDataBase.Implementations
                 });
             }
             context.SaveChanges();
+        }
+
+        private void SendEmail(string mailAddress, string subject, string text)
+        {
+            MailMessage objMailMessage = new MailMessage();
+            SmtpClient objSmtpClient = null;
+
+            try
+            {
+                objMailMessage.From = new MailAddress(ConfigurationManager.AppSettings["MailLogin"]);
+                objMailMessage.To.Add(new MailAddress(mailAddress));
+                objMailMessage.Subject = subject;
+                objMailMessage.Body = text;
+                objMailMessage.SubjectEncoding = System.Text.Encoding.UTF8;
+                objMailMessage.BodyEncoding = System.Text.Encoding.UTF8;
+
+                objSmtpClient = new SmtpClient("smtp.gmail.com", 587);
+                objSmtpClient.UseDefaultCredentials = false;
+                objSmtpClient.EnableSsl = true;
+                objSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                objSmtpClient.Credentials = new NetworkCredential(ConfigurationManager.AppSettings["MailLogin"], ConfigurationManager.AppSettings["MailPassword"]);
+
+                objSmtpClient.Send(objMailMessage);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                objMailMessage = null;
+                objSmtpClient = null;
+            }
         }
     }
 }

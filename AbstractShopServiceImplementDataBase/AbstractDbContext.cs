@@ -28,5 +28,7 @@ namespace AbstractShopServiceImplementDataBase
         public virtual DbSet<Stock> Stocks { get; set; }
 
         public virtual DbSet<StockComponent> StockComponents { get; set; }
+
+        public virtual DbSet<MessageInfo> MessageInfos { get; set; }
     }
 }
