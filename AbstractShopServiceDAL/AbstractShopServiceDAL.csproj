@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributies\CustomInterfaceAttribute.cs" />
+    <Compile Include="Attributies\CustomMethodAttribute.cs" />
     <Compile Include="BindingModel\ClientBindingModel.cs" />
     <Compile Include="BindingModel\ComponentBindingModel.cs" />
     <Compile Include="BindingModel\ImplementerBindingModel.cs" />
@@ -78,5 +80,6 @@
       <Name>AbstractShopModel</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
