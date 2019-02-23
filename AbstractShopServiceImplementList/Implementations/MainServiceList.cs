@@ -63,7 +63,7 @@ namespace AbstractShopServiceImplementList.Implementations
             {
                 if (source.Orders[i].Id > maxId)
                 {
-                    maxId = source.Clients[i].Id;
+                    maxId = source.Orders[i].Id;
                 }
             }
             source.Orders.Add(new Order
@@ -106,7 +106,7 @@ namespace AbstractShopServiceImplementList.Implementations
             int index = -1;
             for (int i = 0; i < source.Orders.Count; ++i)
             {
-                if (source.Clients[i].Id == model.Id)
+                if (source.Orders[i].Id == model.Id)
                 {
                     index = i;
                     break;
@@ -128,7 +128,7 @@ namespace AbstractShopServiceImplementList.Implementations
             int index = -1;
             for (int i = 0; i < source.Orders.Count; ++i)
             {
-                if (source.Clients[i].Id == model.Id)
+                if (source.Orders[i].Id == model.Id)
                 {
                     index = i;
                     break;
