@@ -1,4 +1,6 @@
-﻿namespace AbstractShopServiceDAL.ViewModels
+﻿using System.ComponentModel;
+
+namespace AbstractShopServiceDAL.ViewModels
 {
     public class ProductComponentViewModel
     {
@@ -8,8 +10,10 @@
 
         public int ComponentId { get; set; }
 
+        [DisplayName("Компонент")]
         public string ComponentName { get; set; }
 
+        [DisplayName("Количество")]
         public int Count { get; set; }
     }
 }
